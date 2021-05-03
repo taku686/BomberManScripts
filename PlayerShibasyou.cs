@@ -24,13 +24,18 @@ public class PlayerShibasyou : PlayerBase
         StartCoroutine(Skill_One_Collider());
         Destroy(effectClone, 0.7f);
     }
+
     [PunRPC]
     protected override void Skill_Two()
     {
         base.Skill_Two();
         isActive_Skill_Two = true;
         StartCoroutine(Skill_Two_Activate());
-        effectClone_Two =Instantiate(effect_Two_Obj, effect_pos.position, transform.rotation);
+        effectClone_Two = Instantiate(effect_Two_Obj, effect_pos.position, Quaternion.Euler(90, transform.rotation.eulerAngles.y + 90, 0));
+        if (photonView.IsMine)
+        { 
+            effectClone_Two.GetComponent<Counter>().enabled = true;
+        }
         effectClone_Two.transform.SetParent(effect_pos);
     }
 
@@ -46,6 +51,6 @@ public class PlayerShibasyou : PlayerBase
         yield return new WaitForSeconds(15);
        
         isActive_Skill_Two = false;
-        PhotonNetwork.Destroy(effectClone_Two);
+        Destroy(effectClone_Two);
     }
 }

@@ -50,7 +50,6 @@ public class PlayerSyokatsuryou : PlayerBase
     {
 
         yield return new WaitForSeconds(10);
-
         isActive_Skill_Two = false;
         Destroy(effectClone_Two);
     }

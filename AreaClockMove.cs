@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using Photon.Pun;
 using Photon.Realtime;
-//コメント
+
 public class AreaClockMove : MonoBehaviourPunCallbacks
 {
     Vector3 center = new Vector3(4, 0, 5);

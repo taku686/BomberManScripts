@@ -69,7 +69,6 @@ public class PlayerSousou : PlayerBase
         {
             StartCoroutine(StatusUp());
         }
-     //   GameObject timeline = Instantiate(TimeLine);
     }
 
     IEnumerator StatusUp()

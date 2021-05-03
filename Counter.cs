@@ -13,15 +13,20 @@ public class Counter : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        if (Bomb.isCounter&&photonView.IsMine)
+        if (Bomb.isCounter)
         {
-      //      Debug.Log("反射");
+            Debug.Log("反射");
             Bomb.isCounter = false;
-            StartCoroutine(CreateExplosions(transform.forward));
+            StartCoroutine(CreateExplosions(-transform.right, transform.position));
         }
     }
 
-    protected virtual IEnumerator CreateExplosions(Vector3 direction)
+    private void OnDrawGizmos()
+    {
+        Debug.DrawRay(transform.position, -transform.right, Color.blue, .1f);
+    }
+
+    protected IEnumerator CreateExplosions(Vector3 direction, Vector3 pos)
     {
         // 2 マス分ループする
         for (int i = 1; i < 8; i++)
@@ -32,7 +37,7 @@ public class Counter : MonoBehaviourPunCallbacks
             // 爆風を広げた先に何か存在するか確認
             Physics.Raycast
            (
-               transform.position,
+              pos,
                direction,
                 out hit,
                i,
@@ -40,34 +45,43 @@ public class Counter : MonoBehaviourPunCallbacks
            );
 
             // 爆風を広げた先に何も存在しない場合
-            if (!hit.collider)
+            if (!hit.collider || hit.collider.CompareTag("Player"))
             {
                 // 爆風を広げるために、
                 // 爆発エフェクトのオブジェクトを作成
                 PhotonNetwork.Instantiate
-                  (
-                      explosionPrefab.name,
-                      transform.position + (i * direction),
-                      explosionPrefab.transform.rotation
-                  );
+                   (
+                       explosionPrefab.name,
+                      pos + (i * direction),
+                       explosionPrefab.transform.rotation
+                   );
             }
             // 爆風を広げた先に壊れる壁が存在する場合
             else if (hit.collider.CompareTag("BreakingWall"))
             {
                 PhotonNetwork.Instantiate
-                 (
-                     explosionPrefab.name,
-                     transform.position + (i * direction),
-                     explosionPrefab.transform.rotation
-                 );
+                  (
+                      explosionPrefab.name,
+                     pos + (i * direction),
+                      explosionPrefab.transform.rotation
+                  );
                 break;
             }
             // 爆風を広げた先に壁が存在する場合
-            else if (hit.collider.CompareTag("Wall") || hit.collider.CompareTag("CounterEffect"))
+            else if (hit.collider.CompareTag("Wall"))
             {
                 // 爆風はこれ以上広げない
                 //      Debug.Log("爆風はこれ以上広げない");
                 break;
+            }
+            else
+            {
+                PhotonNetwork.Instantiate
+                   (
+                       explosionPrefab.name,
+                       transform.position + (i * direction),
+                       explosionPrefab.transform.rotation
+                   );
             }
 
 

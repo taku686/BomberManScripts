@@ -71,9 +71,6 @@ public class PlayerSyuuyu : PlayerBase
         }
         Destroy(effectClone, 2.5f);
         StartCoroutine(Skill_Two_Activate());
-
-        //     GameObject timeline = Instantiate(TimeLine);
-        //     Destroy(timeline, 2.5f);
     }
    
     IEnumerator Skill_Two_Activate()
