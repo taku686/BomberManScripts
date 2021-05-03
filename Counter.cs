@@ -15,7 +15,7 @@ public class Counter : MonoBehaviourPunCallbacks
     {
         if (Bomb.isCounter)
         {
-            Debug.Log("反射");
+   //         Debug.Log("反射");
             Bomb.isCounter = false;
             StartCoroutine(CreateExplosions(-transform.right, transform.position));
         }
@@ -23,7 +23,7 @@ public class Counter : MonoBehaviourPunCallbacks
 
     private void OnDrawGizmos()
     {
-        Debug.DrawRay(transform.position, -transform.right, Color.blue, .1f);
+  //      Debug.DrawRay(transform.position, -transform.right, Color.blue, .1f);
     }
 
     protected IEnumerator CreateExplosions(Vector3 direction, Vector3 pos)
