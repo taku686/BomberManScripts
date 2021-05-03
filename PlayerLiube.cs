@@ -75,7 +75,7 @@ public class PlayerLiube : PlayerBase
         moveSpeed = 10;
         boxCollider.isTrigger = true;
         GameObject effect = Instantiate(effect_skill_two, effect_Pos2.position, effect_skill_two.transform.rotation, effect_Pos2);
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(20);
         Destroy(effect);
         moveSpeed = 5;
         isActive_Skill_Two = false;
