@@ -1,43 +1,9 @@
-﻿/*
- * Copyright (c) 2017 Razeware LLC
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * 
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * Notwithstanding the foregoing, you may not use, copy, modify, merge, publish, 
- * distribute, sublicense, create a derivative work, and/or sell copies of the 
- * Software in any work that is designed, intended, or marketed for pedagogical or 
- * instructional purposes related to programming, coding, application development, 
- * or information technology.  Permission for such use, copying, modification,
- * merger, publication, distribution, sublicensing, creation of derivative works, 
- * or sale is expressly withheld.
- *    
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
-using UnityEngine;
-using System.Collections;
-using System;
-using Photon.Pun;
-using Photon.Realtime;
+﻿using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening;
+using UnityEngine;
 using Chronos;
 
-public class PlayerBase : MonoBehaviourPunCallbacks
+public class PlayerBase_OffLine : MonoBehaviour
 {
     public float moveSpeed;
     public bool canDropBombs = true;
@@ -46,13 +12,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     //Can the player move?
     public bool dead = false;
 
-    //Prefabs
- //   public GameObject bombPrefab;
- //   public GameObject penetrationBombPrefab;
- //   public GameObject diffuseBombPrefab;
- //   public GameObject bounceBombPrefab;
-    private GameObject shield;
-
     //Cached components
     protected Rigidbody rigidBody;
     protected Transform myTransform;
@@ -60,49 +19,35 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     [SerializeField] protected SkinnedMeshRenderer skinnedMeshRenderer;
     StageUIManager stageUIManager;
     public ItemManager itemManager;
-    private float timer;
-    private float time;
-    private Quaternion initRotation;
     protected bool isSkill_One;
     public bool isSkill_Two;
     public bool isActive_Skill_Two;
     [SerializeField] protected float WaitTime_SkillOne;
     [SerializeField] protected float WaitTime_SkillTwo;
     private bool isInWall;
-    [SerializeField]protected LocalClock localClock;
+    [SerializeField] protected LocalClock localClock;
     [SerializeField] protected Timeline timeline;
     [SerializeField] LayerMask layerMask;
     public static bool isHold;
- //   public static bool isBombWait;
     public static bool isThrowing;
     private GameObject m_bomb;
     private Bomb m_bombSc;
     private bool isTouchBomb;
     [SerializeField] Transform bombPos;
     protected GlobalClock[] globalClock;
-    [SerializeField] protected bool isSkill_One_Rpc;
-    [SerializeField] protected bool isSkill_Two_Rpc;
     protected int bombId = 0;
-    [SerializeField]protected GameObject exitCollision;
-    [SerializeField] BoxCollider boxCollider_Collision;
+    [SerializeField] protected GameObject exitCollision;
+    [SerializeField] protected BoxCollider boxCollider_Collision;
     public bool isDead;
-    protected int downTime = 0;
+   protected int downTime = 0;
     //   private int bombNumOnStage;
     public int PlayerOwnerId { get; private set; }
 
     // Use this for initialization
     protected virtual void Start()
     {
-             Debug.Log("LocalPlayer" + PhotonNetwork.LocalPlayer.ActorNumber);
         rigidBody = GetComponent<Rigidbody>();
         myTransform = transform;
-        photonView.RPC(nameof(Initialized), RpcTarget.All);
-    }
-
-    [PunRPC]
-    protected void Initialized()
-    {
-        Debug.Log("初期動作");
         itemManager = GameObject.Find("ItemManager").GetComponent<ItemManager>();
         stageUIManager = GameObject.Find("UIManager").GetComponent<StageUIManager>();
     }
@@ -110,43 +55,35 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (WarpGrid.isEnableWarp && photonView.IsMine&&!isInWall)
+        if (WarpGrid.isEnableWarp &&  !isInWall)
         {
             UpdateMovement();
 
-            if (Input.GetKeyDown(KeyCode.J) && !isSkill_One && isSkill_One_Rpc)
-            {
-                photonView.RPC(nameof(Skill_One), RpcTarget.All);
-            }
-            else if (Input.GetKeyDown(KeyCode.J) && !isSkill_One && !isSkill_One_Rpc)
+           if (Input.GetKeyDown(KeyCode.J) && !isSkill_One )
             {
                 Skill_One();
             }
-            if (Input.GetKeyDown(KeyCode.L) && !isSkill_Two && !isActive_Skill_Two && isSkill_Two_Rpc)
-            {
-                photonView.RPC(nameof(Skill_Two), RpcTarget.All);
-            }
-            else if (Input.GetKeyDown(KeyCode.L) && !isSkill_Two && !isActive_Skill_Two && !isSkill_Two_Rpc)
+           if (Input.GetKeyDown(KeyCode.L) && !isSkill_Two && !isActive_Skill_Two )
             {
                 Skill_Two();
             }
-            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow && isTouchBomb && isTouchBomb )
+            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow && isTouchBomb && isTouchBomb)
             {
                 Bomb bombSc = m_bomb.GetComponent<Bomb>();
-                photonView.RPC(nameof(Lift), RpcTarget.All,bombSc.Id,bombSc.OwnerId);
+                Lift(bombSc.Id, bombSc.OwnerId);
             }
-            else if (Input.GetKeyDown(KeyCode.H) && isHold )
+            else if (Input.GetKeyDown(KeyCode.H) && isHold)
             {
                 float angle = (transform.rotation.eulerAngles.y) % 360;
                 Vector3 playerPos = transform.position;
-                photonView.RPC(nameof(Throw), RpcTarget.All, angle, playerPos);
+                Throw(angle, playerPos);
             }
             if (isDead)
             {
                 isDead = false;
-                photonView.RPC(nameof(Die_Player), RpcTarget.All);
+                StartCoroutine(Die());
             }
-                   
+
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
 
@@ -158,14 +95,14 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         }
     }
 
-   
+
     protected virtual void Skill_One()
     {
         isSkill_One = true;
         animator.SetTrigger("Attack");
         StartCoroutine(Skill_One_Downtime());
     }
-   
+
     protected virtual void Skill_Two()
     {
         isSkill_Two = true;
@@ -185,7 +122,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         isSkill_Two = false;
     }
 
-    [PunRPC]
     protected virtual void Lift(int id, int ownerId)
     {
         animator.SetTrigger("Throw");
@@ -208,17 +144,15 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(.5f);
         animator.SetBool("Hold", true);
     }
-
-    [PunRPC]
+    
     protected virtual void Throw(float angle, Vector3 playerPos)
     {
         animator.SetTrigger("Throwing");
         animator.SetBool("Hold", false);
         m_bomb.transform.parent = null;
-        if (photonView.IsMine)
-        {
+       
             StartCoroutine(ExitCollisionSwitch_Corutine());
-        }
+        
         m_bombSc.angle = angle;
         m_bombSc.ThrowingBall(angle, playerPos);
         isThrowing = true;
@@ -235,14 +169,14 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         exitCollision.SetActive(true);
     }
 
-    private void UpdateMovement ()
+    private void UpdateMovement()
     {
         if (!canMove)
         { //Return if player can't move
             return;
         }
         //Depending on the player number, use different input for moving     
-        UpdatePlayerMovement();        
+        UpdatePlayerMovement();
     }
 
     /// <summary>
@@ -291,7 +225,8 @@ public class PlayerBase : MonoBehaviourPunCallbacks
    0.4f,
     Mathf.RoundToInt(myTransform.position.z)
 );
-            photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower, isKick);
+
+            DropBomb(pos, bombId++, bombType, firePower, isKick);
         }
     }
 
@@ -302,13 +237,13 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         downTime = 0;
     }
 
-    [PunRPC]
+   
     /// <summary>
     /// Drops a bomb beneath the player
     /// </summary>
-    protected void DropBomb(Vector3 bombPos,int bombId,int bombType,int firePower,bool isKick,PhotonMessageInfo info)
+    protected void DropBomb(Vector3 bombPos, int bombId, int bombType, int firePower, bool isKick)
     {
-        BombManager.Instance.BombInstantiate(bombPos, bombId, info.Sender.ActorNumber, bombType, firePower, isKick);
+        BombManager.Instance.BombInstantiate(bombPos, bombId, 1, bombType, firePower, isKick);
     }
 
     protected int BombType()
@@ -338,7 +273,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     protected virtual void OnTriggerEnter(Collider other)
     {
         //     Debug.Log("侵入検知");
-      
+
         if (other.CompareTag("PenetrationBomb"))
         {
             Destroy(other.gameObject);
@@ -382,7 +317,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             isTouchBomb = false;
         }
     }
-    
+
     private void OnCollisionStay(Collision collision)
     {
         Vector3 dir = collision.transform.localPosition - transform.position;
@@ -407,7 +342,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             {
                 transform.position = new Vector3(10, 0, 0);
             }
-            photonView.RPC(nameof(Die_Player), RpcTarget.All);
+            StartCoroutine(Die());
         }
     }
 
@@ -416,12 +351,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         localClock.localTimeScale = 0;
         yield return new WaitForSeconds(2);
         localClock.localTimeScale = 1;
-    }
-
-    [PunRPC]
-    protected void Die_Player()
-    {
-        StartCoroutine(Die());
     }
 
     public IEnumerator Die()
@@ -438,8 +367,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             //    Debug.Log(time);
         }
         //     Debug.Log("死亡確認");
-        if (photonView.IsMine)
-        {
             isInWall = false;
             itemManager.heart -= 1;
             itemManager.speed = 1;
@@ -456,7 +383,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             itemManager.isJump = false;
             stageUIManager.heeartText.text = itemManager.heart.ToString();
             dead = false;
-        }
+        
     }
 
     private void OnDrawGizmos()

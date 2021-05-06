@@ -28,6 +28,8 @@ public class GManager : SingletonMonoBehaviour<GManager>
     [SerializeField] GameObject sonsaku_Play;
     [SerializeField] GameObject sceneImage;
     [SerializeField] Slider slider;
+    public bool isOffLine;
+    public int stageNum_OffLine;
     public int stageNum = 1;
     public int selectedCharacterNum;
     public int playerNum;
@@ -41,6 +43,11 @@ public class GManager : SingletonMonoBehaviour<GManager>
     private void Start()
     {
         DontDestroyOnLoad(this);
+
+        if (isOffLine)
+        {
+            PhotonNetwork.OfflineMode = true;
+        }
     }
 
     public GameObject CharacterInstantiate(int characterNum)
@@ -108,7 +115,7 @@ public class GManager : SingletonMonoBehaviour<GManager>
         {
             startPos = new Vector3(10, 0, 0);
         }
-
+        /*
         if (selectedCharacterNum == 1)
         {
             Debug.Log("プレイヤー１生成");
@@ -218,9 +225,111 @@ public class GManager : SingletonMonoBehaviour<GManager>
                 }
             }
         }
+        */
+        if (!isOffLine)
+        {
+            if (selectedCharacterNum == 1)
+            {
+                PlayerCloneInstantiate(bacho_Play, startPos);
+            }
+            else if (selectedCharacterNum == 2)
+            {
+                PlayerCloneInstantiate(liube_Play, startPos);
+            }
+            else if (selectedCharacterNum == 3)
+            {
+                PlayerCloneInstantiate(tyouun_Play, startPos);
+            }
+            else if (selectedCharacterNum == 4)
+            {
+                PlayerCloneInstantiate(syuuyu_Play, startPos);
+            }
+            else if (selectedCharacterNum == 5)
+            {
+                PlayerCloneInstantiate(shibasyou_Play, startPos);
+            }
+            else if (selectedCharacterNum == 6)
+            {
+                PlayerCloneInstantiate(ryofu_Play, startPos);
+            }
+            else if (selectedCharacterNum == 7)
+            {
+                PlayerCloneInstantiate(syokatsuryou_Play, startPos);
+            }
+            else if (selectedCharacterNum == 8)
+            {
+                PlayerCloneInstantiate(sousou_Play, startPos);
+            }
+            else if (selectedCharacterNum == 9)
+            {
+                PlayerCloneInstantiate(sonsaku_Play, startPos);
+            }
+        }
+        else
+        {
+            if (selectedCharacterNum == 1)
+            {
+                PlayerCloneInstantiate_OffLine(bacho_Play, startPos);
+            }
+            else if (selectedCharacterNum == 2)
+            {
+                PlayerCloneInstantiate_OffLine(liube_Play, startPos);
+            }
+            else if (selectedCharacterNum == 3)
+            {
+                PlayerCloneInstantiate_OffLine(tyouun_Play, startPos);
+            }
+            else if (selectedCharacterNum == 4)
+            {
+                PlayerCloneInstantiate_OffLine(syuuyu_Play, startPos);
+            }
+            else if (selectedCharacterNum == 5)
+            {
+                PlayerCloneInstantiate_OffLine(shibasyou_Play, startPos);
+            }
+            else if (selectedCharacterNum == 6)
+            {
+                PlayerCloneInstantiate_OffLine(ryofu_Play, startPos);
+            }
+            else if (selectedCharacterNum == 7)
+            {
+                PlayerCloneInstantiate_OffLine(syokatsuryou_Play, startPos);
+            }
+            else if (selectedCharacterNum == 8)
+            {
+                PlayerCloneInstantiate_OffLine(sousou_Play, startPos);
+            }
+            else if (selectedCharacterNum == 9)
+            {
+                PlayerCloneInstantiate_OffLine(sonsaku_Play, startPos);
+            }
+        }
     }
 
-   
+    private void PlayerCloneInstantiate(GameObject player,Vector3 startPos)
+    {
+        player = PhotonNetwork.Instantiate(player.name, startPos, player.transform.rotation);
+        if (player.GetComponent<PhotonView>().IsMine)
+        {
+            player.GetComponent<PlayerBase>().enabled = true;
+            foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
+            {
+                collider.enabled = true;
+            }
+        }
+    }
+
+    private void PlayerCloneInstantiate_OffLine(GameObject player, Vector3 startPos)
+    {
+        player = Instantiate(player, startPos, player.transform.rotation);
+        player.GetComponent<PlayerBase_OffLine>().enabled = true;
+        foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
+        {
+            collider.enabled = true;
+        }
+    }
+
+
 
     public void Loading(float value)
     {

@@ -10,11 +10,20 @@ public class StageManager : MonoBehaviour
     [SerializeField] private GameObject stage2;
     [SerializeField] private GameObject stage3;
     [SerializeField] GameObject areaClock;
-    [SerializeField] int stageNum;//後でPhotonManager.stageNumberでステージが変更できるように変える
+    [SerializeField] int stageNum;
+   
     // Start is called before the first frame update
     void Start()
     {
-        stageNum = PhotonNetwork.CurrentRoom.GetStageNum();
+        if (!GManager.Instance.isOffLine)
+        {
+            stageNum = PhotonNetwork.CurrentRoom.GetStageNum();
+        }
+        else
+        {
+            stageNum =GManager.Instance.stageNum_OffLine;
+        }
+      
         if (stageNum == 1)
         {
             Instantiate(stage1, Vector3.zero, stage1.transform.rotation);
