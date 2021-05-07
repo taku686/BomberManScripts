@@ -45,12 +45,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     public bool canMove = true;
     //Can the player move?
     public bool dead = false;
-
-    //Prefabs
- //   public GameObject bombPrefab;
- //   public GameObject penetrationBombPrefab;
- //   public GameObject diffuseBombPrefab;
- //   public GameObject bounceBombPrefab;
     private GameObject shield;
 
     //Cached components
@@ -58,22 +52,19 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     protected Transform myTransform;
     [SerializeField] protected Animator animator;
     [SerializeField] protected SkinnedMeshRenderer skinnedMeshRenderer;
-    StageUIManager stageUIManager;
+    protected StageUIManager stageUIManager;
     public ItemManager itemManager;
-    private float timer;
-    private float time;
     private Quaternion initRotation;
     protected bool isSkill_One;
     public bool isSkill_Two;
     public bool isActive_Skill_Two;
     [SerializeField] protected float WaitTime_SkillOne;
     [SerializeField] protected float WaitTime_SkillTwo;
-    private bool isInWall;
+    protected bool isInWall;
     [SerializeField]protected LocalClock localClock;
     [SerializeField] protected Timeline timeline;
     [SerializeField] LayerMask layerMask;
     public static bool isHold;
- //   public static bool isBombWait;
     public static bool isThrowing;
     private GameObject m_bomb;
     private Bomb m_bombSc;
@@ -84,10 +75,9 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     [SerializeField] protected bool isSkill_Two_Rpc;
     protected int bombId = 0;
     [SerializeField]protected GameObject exitCollision;
-    [SerializeField] BoxCollider boxCollider_Collision;
+    [SerializeField]protected BoxCollider boxCollider_Collision;
     public bool isDead;
     protected int downTime = 0;
-    //   private int bombNumOnStage;
     public int PlayerOwnerId { get; private set; }
 
     // Use this for initialization
@@ -419,12 +409,12 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    protected void Die_Player()
+    protected  void Die_Player()
     {
         StartCoroutine(Die());
     }
 
-    public IEnumerator Die()
+    public virtual IEnumerator Die()
     {
         boxCollider_Collision.isTrigger = false;
         float time = 0;

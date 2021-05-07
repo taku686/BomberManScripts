@@ -25,8 +25,8 @@ public class PlayerBacho : PlayerBase
     {
         base.Skill_Two();
         StartCoroutine(Effect_Skill_Two());
-      GameObject timeline=  Instantiate(TimeLine);
-        Destroy(timeline, 2.5f);
+        //     GameObject timeline=  Instantiate(TimeLine);
+        //       Destroy(timeline, 2.5f);
     }
 
     IEnumerator Effect_Skill_Two()

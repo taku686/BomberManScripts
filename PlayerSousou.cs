@@ -97,6 +97,42 @@ public class PlayerSousou : PlayerBase
         Destroy(effectClone_Two);
     }
 
+     public override IEnumerator Die()
+    {
+        boxCollider_Collision.isTrigger = false;
+        float time = 0;
+        while (time < 2)
+        {
+            time += .5f;
+            skinnedMeshRenderer.enabled = false;
+            yield return new WaitForSeconds(0.25f);
+            skinnedMeshRenderer.enabled = true;
+            yield return new WaitForSeconds(0.25f);
+            //    Debug.Log(time);
+        }
+        //     Debug.Log("死亡確認");
+        if (!photonView.IsMine && !isActive_Skill_Two)
+        {
+
+            itemManager.speed = 1;
+            itemManager.bombCount = 1;
+            itemManager.firePower = 2;
+        }
+        itemManager.isNormal = true;
+        itemManager.isPenetration = false;
+        itemManager.isDiffuse = false;
+        itemManager.isBounce = false;
+        itemManager.isKick = false;
+        itemManager.isThrow = false;
+        itemManager.isBarrier = false;
+        itemManager.isReflection = false;
+        itemManager.isJump = false;
+        itemManager.heart -= 1;
+        isInWall = false;
+        stageUIManager.heeartText.text = itemManager.heart.ToString();
+        dead = false;
+    }
+
 
 
 }

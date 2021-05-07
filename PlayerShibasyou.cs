@@ -5,9 +5,7 @@ using Photon.Pun;
 
 public class PlayerShibasyou : PlayerBase
 {
- //   [SerializeField] GameObject TimeLine;
     [SerializeField] GameObject effect_skill_one;
-    //   [SerializeField] GameObject effect_skill_two;
     [SerializeField] GameObject effect_Two_Obj; //エフェクトが決まるまでの仮
     [SerializeField] Transform effect_pos;
     [SerializeField] Transform effect_pos_Skill_One;

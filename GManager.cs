@@ -97,7 +97,6 @@ public class GManager : SingletonMonoBehaviour<GManager>
     // Start is called before the first frame update
     public void PlayerInstantiate()
     {
-        GameObject player;
         Vector3 startPos = Vector3.zero;
         if (playerNum == 1)
         {
@@ -115,117 +114,7 @@ public class GManager : SingletonMonoBehaviour<GManager>
         {
             startPos = new Vector3(10, 0, 0);
         }
-        /*
-        if (selectedCharacterNum == 1)
-        {
-            Debug.Log("プレイヤー１生成");
-            player = PhotonNetwork.Instantiate(bacho_Play.name, startPos, bacho_Play.transform.rotation);
-            if (player.GetComponent<PhotonView>().IsMine)
-            {
-                player.GetComponent<PlayerBase>().enabled = true;
-                foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
-                {
-                    collider.enabled = true;
-                }
-            }
-        }
-        else if (selectedCharacterNum == 2)
-        {
-            player = PhotonNetwork.Instantiate(liube_Play.name, startPos, liube_Play.transform.rotation);
-            if (player.GetComponent<PhotonView>().IsMine)
-            {
-                player.GetComponent<PlayerBase>().enabled = true;
-                foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
-                {
-                    collider.enabled = true;
-                }
-            }
-        }
-        else if (selectedCharacterNum == 3)
-        {
-            player = PhotonNetwork.Instantiate(tyouun_Play.name, startPos, tyouun_Play.transform.rotation);
-            if (player.GetComponent<PhotonView>().IsMine)
-            {
-                player.GetComponent<PlayerBase>().enabled = true;
-                foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
-                {
-                    collider.enabled = true;
-                }
-            }
-        }
-        else if (selectedCharacterNum == 4)
-        {
-            player = PhotonNetwork.Instantiate(syuuyu_Play.name, startPos, syuuyu_Play.transform.rotation);
-            if (player.GetComponent<PhotonView>().IsMine)
-            {
-                player.GetComponent<PlayerBase>().enabled = true;
-                foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
-                {
-                    collider.enabled = true;
-                }
-            }
-        }
-        else if (selectedCharacterNum == 5)
-        {
-            player = PhotonNetwork.Instantiate(shibasyou_Play.name, startPos, shibasyou_Play.transform.rotation);
-            if (player.GetComponent<PhotonView>().IsMine)
-            {
-                player.GetComponent<PlayerBase>().enabled = true;
-                foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
-                {
-                    collider.enabled = true;
-                }
-            }
-        }
-        else if (selectedCharacterNum == 6)
-        {
-            player = PhotonNetwork.Instantiate(ryofu_Play.name, startPos, ryofu_Play.transform.rotation);
-            if (player.GetComponent<PhotonView>().IsMine)
-            {
-                player.GetComponent<PlayerBase>().enabled = true;
-                foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
-                {
-                    collider.enabled = true;
-                }
-            }
-        }
-        else if (selectedCharacterNum == 7)
-        {
-            player = PhotonNetwork.Instantiate(syokatsuryou_Play.name, startPos, syokatsuryou_Play.transform.rotation);
-            if (player.GetComponent<PhotonView>().IsMine)
-            {
-                player.GetComponent<PlayerBase>().enabled = true;
-                foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
-                {
-                    collider.enabled = true;
-                }
-            }
-        }
-        else if (selectedCharacterNum == 8)
-        {
-            player = PhotonNetwork.Instantiate(sousou_Play.name, startPos, sousou_Play.transform.rotation);
-            if (player.GetComponent<PhotonView>().IsMine)
-            {
-                player.GetComponent<PlayerBase>().enabled = true;
-                foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
-                {
-                    collider.enabled = true;
-                }
-            }
-        }
-        else if (selectedCharacterNum == 9)
-        {
-            player = PhotonNetwork.Instantiate(sonsaku_Play.name, startPos, sonsaku_Play.transform.rotation);
-            if (player.GetComponent<PhotonView>().IsMine)
-            {
-                player.GetComponent<PlayerBase>().enabled = true;
-                foreach (var collider in player.GetComponentsInChildren<BoxCollider>())
-                {
-                    collider.enabled = true;
-                }
-            }
-        }
-        */
+      
         if (!isOffLine)
         {
             if (selectedCharacterNum == 1)

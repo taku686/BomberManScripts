@@ -39,8 +39,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
             bombClones.Add(bombClone);
             bombSc = bombClone.GetComponent<Bomb>();
             bombSc.Initialized(id, playerActorId, firePower, isKick);
-            bombSc.enabled = true;
-            bombClone.GetComponent<SphereCollider>().enabled = true;
+       
 
             return bombClone;
         }
@@ -50,8 +49,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
             bombClones.Add(bombClone);
             bombSc = bombClone.GetComponent<Bomb>();
             bombSc.Initialized(id, playerActorId, firePower, isKick);
-            bombSc.enabled = true;
-            bombClone.GetComponent<SphereCollider>().enabled = true;
+      
 
             return bombClone;
         }
@@ -61,8 +59,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
             bombClones.Add(bombClone);
             bombSc = bombClone.GetComponent<Bomb>();
             bombSc.Initialized(id, playerActorId, firePower, isKick);
-            bombSc.enabled = true;
-            bombClone.GetComponent<SphereCollider>().enabled = true;
+     
 
             return bombClone;
         }
@@ -72,8 +69,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
             bombClones.Add(bombClone);
             bombSc = bombClone.GetComponent<Bomb>();
             bombSc.Initialized(id, playerActorId, firePower, isKick);
-            bombSc.enabled = true;
-            bombClone.GetComponent<SphereCollider>().enabled = true;
+     
 
             return bombClone;
         }

@@ -17,14 +17,14 @@ public class PlayerBase_OffLine : MonoBehaviour
     protected Transform myTransform;
     [SerializeField] protected Animator animator;
     [SerializeField] protected SkinnedMeshRenderer skinnedMeshRenderer;
-    StageUIManager stageUIManager;
+    protected StageUIManager stageUIManager;
     public ItemManager itemManager;
     protected bool isSkill_One;
     public bool isSkill_Two;
     public bool isActive_Skill_Two;
     [SerializeField] protected float WaitTime_SkillOne;
     [SerializeField] protected float WaitTime_SkillTwo;
-    private bool isInWall;
+    protected bool isInWall;
     [SerializeField] protected LocalClock localClock;
     [SerializeField] protected Timeline timeline;
     [SerializeField] LayerMask layerMask;
@@ -36,7 +36,7 @@ public class PlayerBase_OffLine : MonoBehaviour
     [SerializeField] Transform bombPos;
     protected GlobalClock[] globalClock;
     protected int bombId = 0;
-    [SerializeField] protected GameObject exitCollision;
+    [SerializeField] protected BoxCollider exitCollision;
     [SerializeField] protected BoxCollider boxCollider_Collision;
     public bool isDead;
    protected int downTime = 0;
@@ -164,9 +164,9 @@ public class PlayerBase_OffLine : MonoBehaviour
 
     IEnumerator ExitCollisionSwitch_Corutine()
     {
-        exitCollision.SetActive(false);
+        exitCollision.enabled = false;
         yield return new WaitForSeconds(0.7f);
-        exitCollision.SetActive(true);
+        exitCollision.enabled = false;
     }
 
     private void UpdateMovement()
@@ -353,7 +353,7 @@ public class PlayerBase_OffLine : MonoBehaviour
         localClock.localTimeScale = 1;
     }
 
-    public IEnumerator Die()
+    public virtual IEnumerator Die()
     {
         boxCollider_Collision.isTrigger = false;
         float time = 0;

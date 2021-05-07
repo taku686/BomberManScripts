@@ -47,44 +47,76 @@ public class Counter : MonoBehaviourPunCallbacks
             // 爆風を広げた先に何も存在しない場合
             if (!hit.collider || hit.collider.CompareTag("Player"))
             {
-                // 爆風を広げるために、
-                // 爆発エフェクトのオブジェクトを作成
-                PhotonNetwork.Instantiate
-                   (
-                       explosionPrefab.name,
-                      pos + (i * direction),
-                       explosionPrefab.transform.rotation
-                   );
+                if (!GManager.Instance.isOffLine)
+                {
+                    PhotonNetwork.Instantiate
+                       (
+                           explosionPrefab.name,
+                          pos + (i * direction),
+                           explosionPrefab.transform.rotation
+                       );
+                }
+                else
+                {
+                    Instantiate
+                       (
+                           explosionPrefab,
+                          pos + (i * direction),
+                           explosionPrefab.transform.rotation
+                       );
+                }
             }
-            // 爆風を広げた先に壊れる壁が存在する場合
+
             else if (hit.collider.CompareTag("BreakingWall"))
             {
-                PhotonNetwork.Instantiate
+                if (!GManager.Instance.isOffLine)
+                {
+                    PhotonNetwork.Instantiate
                   (
                       explosionPrefab.name,
                      pos + (i * direction),
                       explosionPrefab.transform.rotation
                   );
+                }
+                else
+                {
+                    Instantiate
+                   (
+                    explosionPrefab,
+                    pos + (i * direction),
+                    explosionPrefab.transform.rotation
+                   );
+
+                }
                 break;
             }
-            // 爆風を広げた先に壁が存在する場合
+
             else if (hit.collider.CompareTag("Wall"))
             {
-                // 爆風はこれ以上広げない
-                //      Debug.Log("爆風はこれ以上広げない");
+
                 break;
             }
             else
             {
-                PhotonNetwork.Instantiate
+                if (!GManager.Instance.isOffLine)
+                {
+                    PhotonNetwork.Instantiate
                    (
-                       explosionPrefab.name,
-                       transform.position + (i * direction),
-                       explosionPrefab.transform.rotation
+                     explosionPrefab.name,
+                     transform.position + (i * direction),
+                     explosionPrefab.transform.rotation
                    );
+                }
+                else
+                {
+                    Instantiate
+                     (
+                       explosionPrefab,
+                       pos + (i * direction),
+                       explosionPrefab.transform.rotation
+                     );
+                }
             }
-
-
             // 0.05 秒待ってから、次のマスに爆風を広げる
             yield return new WaitForSeconds(0.05f);
         }

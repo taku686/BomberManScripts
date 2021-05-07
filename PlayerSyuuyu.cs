@@ -12,7 +12,6 @@ public class PlayerSyuuyu : PlayerBase
     [SerializeField] GameObject effect_skill_two;
     [SerializeField] TrailsFX.TrailEffect trailEffect;
     [SerializeField] JumpCollider jumpCollider;
-    private GameObject effectClone;
 
 
     protected override void Skill_One()

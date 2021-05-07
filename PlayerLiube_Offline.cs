@@ -7,7 +7,6 @@ public class PlayerLiube_Offline :PlayerBase_OffLine
 {
     [SerializeField] GameObject TimeLine;
     [SerializeField] GameObject effect_skill_two;
-    [SerializeField] Transform effect_pos;
     [SerializeField] Transform effect_Pos2;
     [SerializeField] JumpCollider jumpCollider;
     [SerializeField] TrailsFX.TrailEffect trailEffect;
@@ -54,12 +53,13 @@ public class PlayerLiube_Offline :PlayerBase_OffLine
         base.Skill_Two();
         isActive_Skill_Two = true;
         StartCoroutine(Skill_Two_Activate());
-        GameObject timeline = Instantiate(TimeLine);
-        Destroy(timeline, 2.5f);
+    //    GameObject timeline = Instantiate(TimeLine);
+    //    Destroy(timeline, 2.5f);
     }
 
     IEnumerator Skill_Two_Activate()
     {
+        yield return new WaitForSeconds(1.8f);
         moveSpeed = 10;
        boxCollider_Collision.isTrigger = true;
         GameObject effect = Instantiate(effect_skill_two, effect_Pos2.position, effect_skill_two.transform.rotation, effect_Pos2);

@@ -35,8 +35,6 @@ public class PlayerSyokatsuryou : PlayerBase
         effectClone_Two.transform.SetParent(effect_pos);
     }
 
-
-
     IEnumerator Skill_One_Active()
     {
         yield return new WaitForSeconds(0.7f);

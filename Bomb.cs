@@ -4,10 +4,9 @@ using UnityEngine;
 using SkeletonEditor;
 using DG.Tweening;
 using Photon.Pun;
-using Photon.Realtime;
 using System.Linq;
 
-public class Bomb : MonoBehaviourPunCallbacks
+public class Bomb : MonoBehaviour
 {
     [SerializeField] protected int id;
     [SerializeField] protected int ownerId;
@@ -207,33 +206,30 @@ public class Bomb : MonoBehaviourPunCallbacks
             if (angle == 0 || isForward)
             {
                 targetPosition = new Vector3(Mathf.RoundToInt(transform.position.x), 0.5f, Mathf.RoundToInt(transform.position.z + 1));
-                transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+                transform.DOJump(targetPosition, 2, 1, throwingSpeed);
             }
             else if (angle == 90 || isRight)
             {
                 targetPosition = new Vector3(Mathf.RoundToInt(transform.position.x + 1), 0.5f, Mathf.RoundToInt(transform.position.z));
-                transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+                transform.DOJump(targetPosition, 2, 1, throwingSpeed);
             }
             else if (angle == 180 || isBack)
             {
                 targetPosition = new Vector3(Mathf.RoundToInt(transform.position.x), 0.5f, Mathf.RoundToInt(transform.position.z - 1));
-                transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+                transform.DOJump(targetPosition, 2, 1, throwingSpeed);
             }
             else if (angle == 270 || isLeft)
             {
                 targetPosition = new Vector3(Mathf.RoundToInt(transform.position.x - 1), 0.5f, Mathf.RoundToInt(transform.position.z));
-                transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+                transform.DOJump(targetPosition, 2, 1, throwingSpeed);
             }
         }
         else if (other.CompareTag("OutWall") && (PlayerBase.isThrowing || isSkipOver))
         {
-            //     Debug.Log("外壁接触");
             StartCoroutine(BombTeleportaion());
         }
         if (other.CompareTag("Ground") && (PlayerBase.isThrowing || isSkipOver))
         {
-            //     Debug.Log("地面接触");
-         //   Debug.Log(isSkipOver);
             PlayerBase.isThrowing = false;
             isBombWait = false;
             sphereCollider.isTrigger = false;

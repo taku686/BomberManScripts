@@ -37,119 +37,66 @@ public class PlayerSonsaku : PlayerBase
         int bombType = BombType();
         int firePower = itemManager.firePower;
         bool isKick = itemManager.isKick;
-        photonView.RPC(nameof(Sonsaku_Skill_Two), RpcTarget.All, playerPos, angle, bombType, firePower, isKick);
+        photonView.RPC(nameof(Sonsaku_Skill_Two), RpcTarget.All, playerPos, shotPoint.position, angle, bombType, firePower, isKick);
     }
 
     [PunRPC]
-    private void Sonsaku_Skill_Two(Vector3 playerPos,float angle,int bombType,int firePower,bool isKick)
+    private void Sonsaku_Skill_Two(Vector3 playerPos,Vector3 shotPos,float angle,int bombType,int firePower,bool isKick)
     {
-        isSkill_Two = true;
-        animator.SetTrigger("Passive");   
-        StartCoroutine(Skill_Two_Downtime());
-        StartCoroutine(Bombardment(playerPos,angle,bombType,firePower,isKick));
+        base.Skill_Two();
+        StartCoroutine(Bombardment(playerPos, shotPos, angle, bombType, firePower, isKick));
     }
 
     IEnumerator TrigerSwitch()
     {
         yield return new WaitForSeconds(1.8f);
-        exitCollision.SetActive(false);
+        
         yield return new WaitForSeconds(0.7f);
-        exitCollision.SetActive(true);
+       
     }
 
-    IEnumerator Bombardment(Vector3 playerPos, float angle, int bombType, int firePower, bool isKick)
+    IEnumerator Bombardment(Vector3 playerPos,Vector3 shotPos, float angle, int bombType, int firePower, bool isKick)
     {
         yield return new WaitForSeconds(2f);
-        GameObject bombClone1;
-        GameObject bombClone2;
-        GameObject bombClone3;
-        Bomb bombClone1Sc;
-        Bomb bombClone2Sc;
-        Bomb bombClone3Sc;
+        exitCollision.SetActive(false);
+        for (int i = -1; i < 2; i++)
+        {
+           
+            if (angle == 0 || angle == 180)
+            {
+                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower, isKick);
+                Bomb bombCloneSc = bombClone.GetComponent<Bomb>();
+                if (angle == 0)
+                {
+                    bombCloneSc.isForward = true;
+                }
+                else if (angle == 180)
+                {
+                    bombCloneSc.isBack = true;
+                }
+                bombCloneSc.isSkipOver = true;
+                bombCloneSc.angle = 1;
+                bombClone.transform.DOJump(new Vector3(Mathf.CeilToInt(playerPos.x + (i * 2)), 0.5f, Mathf.CeilToInt((5 * Mathf.Cos(angle * Mathf.PI / 180) + playerPos.z))), 2, 1, 0.3f);
 
-        if (angle == 0)
-        {
-            bombClone1 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone2 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone3 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone1.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x), 0.5f, Mathf.RoundToInt(playerPos.z + 5)), 2, 1, 0.3f);
-            bombClone2.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x + 2), 0.5f, Mathf.RoundToInt(playerPos.z + 5)), 2, 1, 0.3f);
-            bombClone3.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x - 2), 0.5f, Mathf.RoundToInt(playerPos.z + 5)), 2, 1, 0.3f);
-            bombClone1Sc = bombClone1.GetComponent<Bomb>();
-            bombClone2Sc = bombClone2.GetComponent<Bomb>();
-            bombClone3Sc = bombClone3.GetComponent<Bomb>();
-            bombClone1Sc.isSkipOver = true;
-            bombClone2Sc.isSkipOver = true;
-            bombClone3Sc.isSkipOver = true;
-            bombClone1Sc.isForward = true;
-            bombClone2Sc.isForward = true;
-            bombClone3Sc.isForward = true;
-            bombClone1Sc.angle = 1;
-            bombClone2Sc.angle = 2;
-            bombClone3Sc.angle = 3;
+            }
+            else if (angle == 90 || angle == 270)
+            {
+                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower, isKick);
+                Bomb bombCloneSc = bombClone.GetComponent<Bomb>();
+                if (angle == 90)
+                {
+                    bombCloneSc.isRight = true;
+                }
+                else if (angle == 270)
+                {
+                    bombCloneSc.isLeft = true;
+                }
+                bombCloneSc.isSkipOver = true;
+                bombCloneSc.angle = 1;
+                bombClone.transform.DOJump(new Vector3(Mathf.CeilToInt(playerPos.x + (5 * Mathf.Sin(angle * Mathf.PI / 180))), 0.5f, Mathf.CeilToInt(playerPos.z + (i * 2))), 2, 1, 0.3f);
+            }
         }
-        else if (angle == 90)
-        {
-            bombClone1 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone2 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone3 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone1.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x + 5), 0.5f, Mathf.RoundToInt(playerPos.z)), 2, 1, 0.3f);
-            bombClone2.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x + 5), 0.5f, Mathf.RoundToInt(playerPos.z + 2)), 2, 1, 0.3f);
-            bombClone3.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x + 5), 0.5f, Mathf.RoundToInt(playerPos.z - 2)), 2, 1, 0.3f);
-            bombClone1Sc = bombClone1.GetComponent<Bomb>();
-            bombClone2Sc = bombClone2.GetComponent<Bomb>();
-            bombClone3Sc = bombClone3.GetComponent<Bomb>();
-            bombClone1Sc.isSkipOver = true;
-            bombClone2Sc.isSkipOver = true;
-            bombClone3Sc.isSkipOver = true;
-            bombClone1Sc.isRight = true;
-            bombClone2Sc.isRight = true;
-            bombClone3Sc.isRight = true;
-            bombClone1Sc.angle = 1;
-            bombClone2Sc.angle = 2;
-            bombClone3Sc.angle = 3;
-        }
-        else if (angle == 180)
-        {
-            bombClone1 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone2 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone3 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone1.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x), 0.5f, Mathf.RoundToInt(playerPos.z - 5)), 2, 1, 0.3f);
-            bombClone2.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x + 2), 0.5f, Mathf.RoundToInt(playerPos.z - 5)), 2, 1, 0.3f);
-            bombClone3.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x - 2), 0.5f, Mathf.RoundToInt(playerPos.z - 5)), 2, 1, 0.3f);
-            bombClone1Sc = bombClone1.GetComponent<Bomb>();
-            bombClone2Sc = bombClone2.GetComponent<Bomb>();
-            bombClone3Sc = bombClone3.GetComponent<Bomb>();
-            bombClone1Sc.isSkipOver = true;
-            bombClone2Sc.isSkipOver = true;
-            bombClone3Sc.isSkipOver = true;
-            bombClone1Sc.isBack = true;
-            bombClone2Sc.isBack = true;
-            bombClone3Sc.isBack = true;
-            bombClone1Sc.angle = 1;
-            bombClone2Sc.angle = 2;
-            bombClone3Sc.angle = 3;
-        }
-        else if (angle == 270)
-        {
-            bombClone1 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone2 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone3 = BombManager.Instance.BombInstantiate(shotPoint.position, bombId++, actorNum, bombType, firePower, isKick);
-            bombClone1.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x - 5), 0.5f, Mathf.RoundToInt(playerPos.z)), 2, 1, 0.3f);
-            bombClone2.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x - 5), 0.5f, Mathf.RoundToInt(playerPos.z + 2)), 2, 1, 0.3f);
-            bombClone3.transform.DOJump(new Vector3(Mathf.RoundToInt(playerPos.x - 5), 0.5f, Mathf.RoundToInt(playerPos.z - 2)), 2, 1, 0.3f);
-            bombClone1Sc = bombClone1.GetComponent<Bomb>();
-            bombClone2Sc = bombClone2.GetComponent<Bomb>();
-            bombClone3Sc = bombClone3.GetComponent<Bomb>();
-            bombClone1Sc.isSkipOver = true;
-            bombClone2Sc.isSkipOver = true;
-            bombClone3Sc.isSkipOver = true;
-            bombClone1Sc.isLeft = true;
-            bombClone2Sc.isLeft = true;
-            bombClone3Sc.isLeft = true;
-            bombClone1Sc.angle = 1;
-            bombClone2Sc.angle = 2;
-            bombClone3Sc.angle = 3;
-        }
+        yield return new WaitForSeconds(.3f);
+        exitCollision.SetActive(true);
     }
 }
