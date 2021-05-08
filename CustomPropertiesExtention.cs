@@ -12,7 +12,7 @@ public static class CustomPropertiesExtention
     private const string characterNumKey = "cNum";
     private const string playerNameKey = "pName";
     private const string stageNumKey = "sNum";
-
+    private const string timeNumKey = "tNum";
     private static readonly Hashtable hashtable = new Hashtable();
 
     public static void SetPlayerNum(this Player player, int actorNum)
@@ -38,6 +38,20 @@ public static class CustomPropertiesExtention
         hashtable.Clear();
     }
 
+    public static void SetStageNum(this Room room, int stageNum)
+    {
+        hashtable[stageNumKey] = stageNum;
+        room.SetCustomProperties(hashtable);
+        hashtable.Clear();
+    }
+
+    public static void SetTimeUpdate(this Room room,float time)
+    {
+        hashtable[timeNumKey] = time;
+        room.SetCustomProperties(hashtable);
+        hashtable.Clear();
+    }
+
     public static int GetPlayerNum(this Player player)
     {
         return (player.CustomProperties[playerNumKey] is int actorNum) ? actorNum : 0;
@@ -54,15 +68,13 @@ public static class CustomPropertiesExtention
         return (player.CustomProperties[playerNameKey] is string name) ? name : string.Empty;
     }
 
-    public static void SetStageNum(this Room room,int stageNum)
-    {
-        hashtable[stageNumKey] = stageNum;
-        room.SetCustomProperties(hashtable);
-        hashtable.Clear();
-    }
-
     public static int GetStageNum(this Room room)
     {
         return (room.CustomProperties[stageNumKey] is int stageNum) ? stageNum : 1;
+    }
+
+    public static float GetTimeUpdate(this Room room)
+    {
+        return (room.CustomProperties[timeNumKey] is float time) ? time : 0;
     }
 }

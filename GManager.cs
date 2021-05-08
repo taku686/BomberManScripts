@@ -34,6 +34,16 @@ public class GManager : SingletonMonoBehaviour<GManager>
     public int selectedCharacterNum;
     public int playerNum;
     public bool isGameStart;
+    public BattleMode battleMode= BattleMode.TimeMode;
+    public int heart;
+    public float time;
+    public int round;
+    public enum BattleMode
+    {
+        SurvivalMode,
+        TimeMode,
+    }
+
 
     protected override void Awake()
     {
@@ -49,6 +59,8 @@ public class GManager : SingletonMonoBehaviour<GManager>
             PhotonNetwork.OfflineMode = true;
         }
     }
+
+
 
     public GameObject CharacterInstantiate(int characterNum)
     {

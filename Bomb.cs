@@ -30,10 +30,14 @@ public class Bomb : MonoBehaviour
     public bool isBack;
     public bool isRight;
     public bool isLeft;
-  [SerializeField]  protected int m_firePower;
-    protected bool m_isKick;
+ public int m_firePower;
+    public bool m_isKick;
+    private int bombType;
+    //   public bool isHold;
     public int Id { get { return id; } private set { id = value; } }
     public int OwnerId { get { return ownerId; } private set { ownerId = value; } }
+
+    public int BombType { get { return bombType; } private set { bombType = value; } }
 
     public bool Equals(int id, int ownerId) => id == Id && ownerId == OwnerId;
 
@@ -45,12 +49,13 @@ public class Bomb : MonoBehaviour
     }
 
 
-    public virtual void Initialized(int id, int ownerId,int firePower,bool isKick)
+    public virtual void Initialized(int id, int ownerId,int firePower,int bombType,bool isKick)
     {
         Id = id;
         OwnerId = ownerId;
         m_firePower = firePower;
         m_isKick = isKick;
+        BombType = bombType;
     }
 
     public void ThrowingBall(float angle,Vector3 playerPos)
@@ -190,7 +195,7 @@ public class Bomb : MonoBehaviour
     // 他のオブジェクトがこの爆弾に当たったら呼び出される
     public void OnTriggerEnter(Collider other)
     {
-        if (!exploded && other.CompareTag("Explosion"))
+        if (!exploded && other.CompareTag("Explosion"))//&&!isHold)
         {
             StopCoroutine(Explode());
             isChain = true;
@@ -200,7 +205,7 @@ public class Bomb : MonoBehaviour
         {
             player = other.gameObject;
         }
-        if ((other.CompareTag("BreakingWall") || other.CompareTag("Wall")) && (PlayerBase.isThrowing || isSkipOver))
+        if ((other.CompareTag("BreakingWall") || other.CompareTag("Wall")) && (PlayerBase.isThrowing || PlayerBase_OffLine.isThrowing || isSkipOver))
         {
             //    Debug.Log("壁接触");
             if (angle == 0 || isForward)
@@ -224,13 +229,14 @@ public class Bomb : MonoBehaviour
                 transform.DOJump(targetPosition, 2, 1, throwingSpeed);
             }
         }
-        else if (other.CompareTag("OutWall") && (PlayerBase.isThrowing || isSkipOver))
+        else if (other.CompareTag("OutWall") && (PlayerBase.isThrowing || PlayerBase_OffLine.isThrowing || isSkipOver))
         {
             StartCoroutine(BombTeleportaion());
         }
-        if (other.CompareTag("Ground") && (PlayerBase.isThrowing || isSkipOver))
+        if (other.CompareTag("Ground") && (PlayerBase.isThrowing || PlayerBase_OffLine.isThrowing || isSkipOver))
         {
             PlayerBase.isThrowing = false;
+            PlayerBase_OffLine.isThrowing = false;
             isBombWait = false;
             sphereCollider.isTrigger = false;
             isSkipOver = false;

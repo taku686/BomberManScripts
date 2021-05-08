@@ -16,36 +16,170 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject playerSelectContent;
     [SerializeField] List<Sprite> stageSouceImages;
     [SerializeField] Image stageImage;
+    [SerializeField] GameObject obj_BMName_Point;
+    [SerializeField] GameObject obj_BMExplanation_Point;
+    [SerializeField] GameObject obj_BMName_Survival;
+    [SerializeField] GameObject obj_BMExplanation_Survival;
+    [SerializeField] GameObject obj_HeartText;
+    [SerializeField] GameObject obj_TimeText;
+    [SerializeField] GameObject obj_HeartNum;
+    [SerializeField] GameObject obj_TimeNum;
+    [SerializeField] Text txt_TimeNum;
+    [SerializeField] Text txt_HeartNum;
+    [SerializeField] Text txt_ParticipationNum;
+    [SerializeField] Text txt_RoundNum;
     public GameObject characterSelectPanel;
     public GameObject masterCharacterSelectPanel;
     public GameObject stageSelectPanel;
     public GameObject playerNumSelectPanel;
     public GameObject characterClone;
-    public static byte playerNum=2;
     private RoomOptions roomOptions = new RoomOptions();
-    
+
     private int characterNum = 1;
     private string m_roomName;
     private string newRoomName;
+    private int int_BattleModeNum=10000;
+    private int int_HeartOrTimeNum = 2;
+    private byte byte_ParticipationNum = 2;
+    private int int_RoundNum = 1;
 
-    private void Start()
+  
+    //----------------ルール設定----------------
+
+    public void On_Click_RightArrow_BattleMode()
     {
-        for (int i = 2; i < 5; i++)
+        int_BattleModeNum++;
+        if (int_BattleModeNum % 2 == 1)
         {
-            GameObject gridClone = Instantiate(playerNumGrid, playerNumContent.transform);
-            gridClone.GetComponentInChildren<Text>().text = i.ToString();
+            GManager.Instance.battleMode = GManager.BattleMode.TimeMode;
+            obj_BMExplanation_Point.SetActive(true);
+            obj_BMName_Point.SetActive(true);
+            obj_BMExplanation_Survival.SetActive(false);
+            obj_BMName_Survival.SetActive(false);
+            obj_HeartText.SetActive(false);
+            obj_TimeText.SetActive(true);
+            obj_HeartNum.SetActive(false);
+            obj_TimeNum.SetActive(true);
         }
-        for (int j = 1; j < 5; j++)
+        else if (int_BattleModeNum % 2 == 0)
         {
-            GameObject gridClone = Instantiate(stageSelectGrid, stageSelectContent.transform);
-            gridClone.name = j.ToString();
-        }
-        for (int k = 1; k < 10; k++)
-        {
-            GameObject gridClone = Instantiate(playerSelectButton, playerSelectContent.transform);
-            gridClone.GetComponentInChildren<Text>().text = k.ToString();
+            GManager.Instance.battleMode = GManager.BattleMode.SurvivalMode;
+            obj_BMExplanation_Point.SetActive(false);
+            obj_BMName_Point.SetActive(false);
+            obj_BMExplanation_Survival.SetActive(true);
+            obj_BMName_Survival.SetActive(true);
+            obj_HeartText.SetActive(true);
+            obj_TimeText.SetActive(false);
+            obj_HeartNum.SetActive(true);
+            obj_TimeNum.SetActive(false);
         }
     }
+
+    public void On_Click_LeftArrow_BattleMode()
+    {
+        int_BattleModeNum--;
+        if (int_BattleModeNum % 2 == 1)
+        {
+            GManager.Instance.battleMode = GManager.BattleMode.TimeMode;
+            obj_BMExplanation_Point.SetActive(true);
+            obj_BMName_Point.SetActive(true);
+            obj_BMExplanation_Survival.SetActive(false);
+            obj_BMName_Survival.SetActive(false);
+            obj_HeartText.SetActive(false);
+            obj_TimeText.SetActive(true);
+            obj_HeartNum.SetActive(false);
+            obj_TimeNum.SetActive(true);
+        }
+        else if (int_BattleModeNum % 2 == 0)
+        {
+            GManager.Instance.battleMode = GManager.BattleMode.SurvivalMode;
+            obj_BMExplanation_Point.SetActive(false);
+            obj_BMName_Point.SetActive(false);
+            obj_BMExplanation_Survival.SetActive(true);
+            obj_BMName_Survival.SetActive(true);
+            obj_HeartText.SetActive(true);
+            obj_TimeText.SetActive(false);
+            obj_HeartNum.SetActive(true);
+            obj_TimeNum.SetActive(false);
+        }
+    }
+
+    public void On_Click_RightArrow_TimeOrHeart()
+    {
+        int_HeartOrTimeNum++;
+        if (int_HeartOrTimeNum > 5)
+        {
+            int_HeartOrTimeNum = 2;
+        }
+        txt_HeartNum.text = $"{int_HeartOrTimeNum}機";
+        txt_TimeNum.text = $"{int_HeartOrTimeNum}分";       
+    }
+
+    public void On_Click_LeftArrow_TimeOrHeart()
+    {
+        int_HeartOrTimeNum--;
+        if (int_HeartOrTimeNum < 2)
+        {
+            int_HeartOrTimeNum = 5;
+        }
+        txt_HeartNum.text = $"{int_HeartOrTimeNum}機";
+        txt_TimeNum.text = $"{int_HeartOrTimeNum}分";
+    }
+
+    public void On_Click_RightArrow_Participation()
+    {
+        byte_ParticipationNum++;
+        if (byte_ParticipationNum > 4)
+        {
+            byte_ParticipationNum = 2;
+        }
+        txt_ParticipationNum.text = $"{byte_ParticipationNum}人";
+    }
+
+    public void On_Click_LeftArrow_Participation()
+    {
+        byte_ParticipationNum--;
+        if (byte_ParticipationNum < 2)
+        {
+            byte_ParticipationNum = 4;
+        }
+        txt_ParticipationNum.text = $"{byte_ParticipationNum}人";
+    }
+
+    public void On_Click_RightArrow_Round()
+    {
+        int_RoundNum++;
+        if (int_RoundNum > 5)
+        {
+            int_RoundNum = 1;
+        }
+        txt_RoundNum.text = $"{int_RoundNum}ラウンド";
+    }
+
+    public void On_Click_LeftArrow_Round()
+    {
+        int_RoundNum--;
+        if (int_RoundNum < 1)
+        {
+            int_RoundNum = 5;
+        }
+        txt_RoundNum.text = $"{int_RoundNum}ラウンド";
+    }
+
+    public void On_Click_PlayerNum()
+    {
+        roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = byte_ParticipationNum;
+        newRoomName = "Room" + Random.Range(0, 10000);
+        GManager.Instance.heart = int_HeartOrTimeNum;
+        GManager.Instance.time = int_HeartOrTimeNum;
+        GManager.Instance.round = int_RoundNum;
+        characterClone = Instantiate(GManager.Instance.CharacterInstantiate(1), new Vector3(-13, 0.5f, -8.5f), Quaternion.Euler(0, 180, 0));
+        playerNumSelectPanel.SetActive(false);
+        masterCharacterSelectPanel.SetActive(true);
+    }
+
+    //----------------プレイヤー設定----------------
 
     public void OnPlayerSelectPanel_Click(string roomName)
     {
@@ -75,52 +209,12 @@ public class UIManager : MonoBehaviour
         }
         characterClone = Instantiate(GManager.Instance.CharacterInstantiate(characterNum), new Vector3(-13, 0.5f, -8.5f), Quaternion.Euler(0, 180, 0));
     }
-
-    public void OnStageSelectRightArrow_Click_()
-    {     
-        GManager.Instance.stageNum++;
-        Debug.Log(GManager.Instance.stageNum);
-        if (GManager.Instance.stageNum > 3)
-        {
-            GManager.Instance.stageNum = 1;
-        }
-        stageImage.sprite = stageSouceImages[GManager.Instance.stageNum-1];
-    }
-
-    public void OnStageSelectLeftArrow_Click_()
-    {
-        GManager.Instance.stageNum--;
-        if (GManager.Instance.stageNum < 1)
-        {
-            GManager.Instance.stageNum = 3;
-        }
-        stageImage.sprite = stageSouceImages[GManager.Instance.stageNum-1];
-    }
-
-
-
-    public void On_Click_PlayerNum()
-    {
-        roomOptions = new RoomOptions();
-        roomOptions.MaxPlayers = playerNum;
-        newRoomName = "Room" + Random.Range(0, 10000);
-        characterClone = Instantiate(GManager.Instance.CharacterInstantiate(1), new Vector3(-13, 0.5f, -8.5f), Quaternion.Euler(0, 180, 0));
-        playerNumSelectPanel.SetActive(false);
-        masterCharacterSelectPanel.SetActive(true);
-    }
-
     public void On_Click_Master_Character_Decide()
     {
         GManager.Instance.selectedCharacterNum = characterNum;
         Destroy(characterClone);
         masterCharacterSelectPanel.SetActive(false);
         stageSelectPanel.SetActive(true);
-    }
-
-    public void OnClick_CreateRoom()
-    {
-        stageSelectPanel.SetActive(false);
-        PhotonNetwork.CreateRoom(newRoomName, roomOptions);
     }
 
     public void On_Click_Character_Decide()
@@ -130,4 +224,31 @@ public class UIManager : MonoBehaviour
         characterSelectPanel.SetActive(false);
     }
 
+    //----------------ステージ設定----------------
+    public void OnStageSelectRightArrow_Click_()
+    {
+        GManager.Instance.stageNum++;
+        //      Debug.Log(GManager.Instance.stageNum);
+        if (GManager.Instance.stageNum > 3)
+        {
+            GManager.Instance.stageNum = 1;
+        }
+        stageImage.sprite = stageSouceImages[GManager.Instance.stageNum - 1];
+    }
+
+    public void OnStageSelectLeftArrow_Click_()
+    {
+        GManager.Instance.stageNum--;
+        if (GManager.Instance.stageNum < 1)
+        {
+            GManager.Instance.stageNum = 3;
+        }
+        stageImage.sprite = stageSouceImages[GManager.Instance.stageNum - 1];
+    }
+
+    public void OnClick_CreateRoom()
+    {
+        stageSelectPanel.SetActive(false);
+        PhotonNetwork.CreateRoom(newRoomName, roomOptions);
+    }
 }

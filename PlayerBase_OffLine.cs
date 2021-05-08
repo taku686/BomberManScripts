@@ -6,41 +6,37 @@ using Chronos;
 public class PlayerBase_OffLine : MonoBehaviour
 {
     public float moveSpeed;
-    public bool canDropBombs = true;
-    //Can the player drop bombs?
-    public bool canMove = true;
-    //Can the player move?
+    public bool canDropBombs = true; 
+    public bool canMove = true;  
     public bool dead = false;
-
-    //Cached components
-    protected Rigidbody rigidBody;
-    protected Transform myTransform;
-    [SerializeField] protected Animator animator;
-    [SerializeField] protected SkinnedMeshRenderer skinnedMeshRenderer;
-    protected StageUIManager stageUIManager;
     public ItemManager itemManager;
-    protected bool isSkill_One;
     public bool isSkill_Two;
     public bool isActive_Skill_Two;
-    [SerializeField] protected float WaitTime_SkillOne;
-    [SerializeField] protected float WaitTime_SkillTwo;
-    protected bool isInWall;
-    [SerializeField] protected LocalClock localClock;
-    [SerializeField] protected Timeline timeline;
-    [SerializeField] LayerMask layerMask;
     public static bool isHold;
     public static bool isThrowing;
+    public bool isDead;
+    protected Rigidbody rigidBody;
+    protected Transform myTransform; 
+    protected StageUIManager stageUIManager;   
+    protected bool isSkill_One;
+    protected bool isInWall;
+    protected GlobalClock[] globalClock;
+    protected int bombId = 0;
+    protected int downTime = 0;
+    [SerializeField] protected float WaitTime_SkillOne;
+    [SerializeField] protected float WaitTime_SkillTwo;
+    [SerializeField] protected Animator animator;
+    [SerializeField] protected SkinnedMeshRenderer skinnedMeshRenderer;  
+    [SerializeField] protected LocalClock localClock;
+    [SerializeField] protected Timeline timeline;
+    [SerializeField] protected BoxCollider exitCollision;
+    [SerializeField] protected BoxCollider boxCollider_Collision;
+    [SerializeField] LayerMask layerMask;   
+    [SerializeField] Transform bombPos;
     private GameObject m_bomb;
     private Bomb m_bombSc;
     private bool isTouchBomb;
-    [SerializeField] Transform bombPos;
-    protected GlobalClock[] globalClock;
-    protected int bombId = 0;
-    [SerializeField] protected BoxCollider exitCollision;
-    [SerializeField] protected BoxCollider boxCollider_Collision;
-    public bool isDead;
-   protected int downTime = 0;
-    //   private int bombNumOnStage;
+
     public int PlayerOwnerId { get; private set; }
 
     // Use this for initialization
@@ -55,22 +51,30 @@ public class PlayerBase_OffLine : MonoBehaviour
     // Update is called once per frame
     protected virtual void Update()
     {
-        if (WarpGrid.isEnableWarp &&  !isInWall)
+        if (WarpGrid.isEnableWarp && !isInWall)
         {
             UpdateMovement();
 
-           if (Input.GetKeyDown(KeyCode.J) && !isSkill_One )
+            if (Input.GetKeyDown(KeyCode.J) && !isSkill_One)
             {
                 Skill_One();
             }
-           if (Input.GetKeyDown(KeyCode.L) && !isSkill_Two && !isActive_Skill_Two )
+            if (Input.GetKeyDown(KeyCode.L) && !isSkill_Two && !isActive_Skill_Two)
             {
                 Skill_Two();
             }
-            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow && isTouchBomb && isTouchBomb)
+            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow )
             {
-                Bomb bombSc = m_bomb.GetComponent<Bomb>();
-                Lift(bombSc.Id, bombSc.OwnerId);
+                if (Physics.Raycast(transform.position,transform.forward,out RaycastHit   hit, .7f,layerMask))
+                {
+                    if (hit.collider.CompareTag("Bomb"))
+                    {
+                        hit.collider.GetComponent<SphereCollider>().enabled = false;
+                        m_bomb = hit.collider.gameObject;
+                        Bomb bombSc = hit.transform.GetComponent<Bomb>();
+                        Lift(bombSc.Id, bombSc.OwnerId);
+                    }        
+                }
             }
             else if (Input.GetKeyDown(KeyCode.H) && isHold)
             {
@@ -125,13 +129,9 @@ public class PlayerBase_OffLine : MonoBehaviour
     protected virtual void Lift(int id, int ownerId)
     {
         animator.SetTrigger("Throw");
-        Debug.Log("BombID" + id);
-        Debug.Log("BombOwnerId" + ownerId);
-        //   Debug.Log("Sender" + info.Sender.NickName);
-        //        Debug.Log("Sender" + info.Sender.UserId);
-        //      Debug.Log("LocalPlayer" + PhotonNetwork.LocalPlayer.UserId);
         GameObject bomb = BombManager.Instance.BombSearch(id, ownerId);
         m_bombSc = bomb.GetComponent<Bomb>();
+  //      m_bombSc.isHold = true;
         m_bombSc.isBombWait = true;
         bomb.transform.SetParent(bombPos);
         bomb.transform.localPosition = Vector3.zero;
@@ -144,16 +144,16 @@ public class PlayerBase_OffLine : MonoBehaviour
         yield return new WaitForSeconds(.5f);
         animator.SetBool("Hold", true);
     }
-    
-    protected virtual void Throw(float angle, Vector3 playerPos)
+
+    protected void Throw(float angle, Vector3 playerPos)
     {
         animator.SetTrigger("Throwing");
         animator.SetBool("Hold", false);
         m_bomb.transform.parent = null;
-       
-            StartCoroutine(ExitCollisionSwitch_Corutine());
-        
+        StartCoroutine(ExitCollisionSwitch_Corutine());
+        m_bomb.GetComponent<SphereCollider>().enabled = true;
         m_bombSc.angle = angle;
+//        m_bombSc.isHold = false;
         m_bombSc.ThrowingBall(angle, playerPos);
         isThrowing = true;
         isHold = false;
@@ -166,7 +166,7 @@ public class PlayerBase_OffLine : MonoBehaviour
     {
         exitCollision.enabled = false;
         yield return new WaitForSeconds(0.7f);
-        exitCollision.enabled = false;
+        exitCollision.enabled = true;
     }
 
     private void UpdateMovement()
@@ -175,13 +175,9 @@ public class PlayerBase_OffLine : MonoBehaviour
         { //Return if player can't move
             return;
         }
-        //Depending on the player number, use different input for moving     
         UpdatePlayerMovement();
     }
 
-    /// <summary>
-    /// Updates Player 2's movement and facing rotation using the arrow keys and drops bombs using Enter or Return
-    /// </summary>
     protected virtual void UpdatePlayerMovement()
     {
         if (Input.GetKey(KeyCode.UpArrow) && !isSkill_One && !isSkill_Two)
@@ -302,7 +298,7 @@ public class PlayerBase_OffLine : MonoBehaviour
         {
             //    Debug.Log("ボム接触" + isTouchBomb);
             isTouchBomb = true;
-            m_bomb = other.gameObject;
+        //    m_bomb = other.gameObject;
         }
         else if (other.CompareTag("FreezeEffect"))
         {
@@ -367,22 +363,22 @@ public class PlayerBase_OffLine : MonoBehaviour
             //    Debug.Log(time);
         }
         //     Debug.Log("死亡確認");
-            isInWall = false;
-            itemManager.heart -= 1;
-            itemManager.speed = 1;
-            itemManager.bombCount = 1;
-            itemManager.firePower = 2;
-            itemManager.isNormal = true;
-            itemManager.isPenetration = false;
-            itemManager.isDiffuse = false;
-            itemManager.isBounce = false;
-            itemManager.isKick = false;
-            itemManager.isThrow = false;
-            itemManager.isBarrier = false;
-            itemManager.isReflection = false;
-            itemManager.isJump = false;
-            stageUIManager.heeartText.text = itemManager.heart.ToString();
-            dead = false;
+        isInWall = false;
+        itemManager.heart -= 1;
+        itemManager.speed = 1;
+        itemManager.bombCount = 1;
+        itemManager.firePower = 2;
+        itemManager.isNormal = true;
+        itemManager.isPenetration = false;
+        itemManager.isDiffuse = false;
+        itemManager.isBounce = false;
+        itemManager.isKick = false;
+        itemManager.isThrow = false;
+        itemManager.isBarrier = false;
+        itemManager.isReflection = false;
+        itemManager.isJump = false;
+        stageUIManager.heeartText.text = itemManager.heart.ToString();
+        dead = false;
         
     }
 
@@ -406,7 +402,8 @@ public class PlayerBase_OffLine : MonoBehaviour
         {
             dir = Vector3.left;
         }
-        Debug.DrawRay(new Vector3(transform.position.x, 0.6f, transform.position.z), dir, Color.blue, .1f);
         */
+        Debug.DrawRay(transform.position, transform.forward * .7f, Color.blue, .1f);
+        
     }
 }

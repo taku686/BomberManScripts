@@ -19,7 +19,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [SerializeField] Button leftButton;
     public List<GameObject> playerObj;
   //  public static byte playerNumber=2;
-    public static int stageNumber=1;
+  //  public static int stageNumber=1;
     public  int itemNumber;
     public  bool isCreateRoom;
     public  bool isEnterRoom;
@@ -122,6 +122,10 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         timeNum = 30;
         timer.text = timeNum.ToString();
         GManager.Instance.playerNum = PhotonNetwork.CurrentRoom.Players.Count;
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.CurrentRoom.SetTimeUpdate(GManager.Instance.time * 60);
+        }
         playerClone = PhotonNetwork.Instantiate(GManager.Instance.CharacterInstantiate(GManager.Instance.selectedCharacterNum).name, new Vector3(-10 + (PhotonNetwork.CurrentRoom.Players.Count - 1) * 1.5f, 0.5f, -8.5f), Quaternion.Euler(0, 180, 0));
         PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.CurrentRoom.Players.Count.ToString();
         if (PhotonNetwork.IsMasterClient)

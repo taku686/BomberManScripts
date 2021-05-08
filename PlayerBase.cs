@@ -68,7 +68,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     public static bool isThrowing;
     private GameObject m_bomb;
     private Bomb m_bombSc;
-    private bool isTouchBomb;
+//    private bool isTouchBomb;
     [SerializeField] Transform bombPos;
     protected GlobalClock[] globalClock;
     [SerializeField] protected bool isSkill_One_Rpc;
@@ -120,10 +120,18 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             {
                 Skill_Two();
             }
-            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow && isTouchBomb && isTouchBomb )
+            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow )
             {
-                Bomb bombSc = m_bomb.GetComponent<Bomb>();
-                photonView.RPC(nameof(Lift), RpcTarget.All,bombSc.Id,bombSc.OwnerId);
+                if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, .7f, layerMask))
+                {
+                    if (hit.collider.CompareTag("Bomb"))
+                    {
+                             hit.collider.GetComponent<SphereCollider>().enabled = false;
+                     //   Destroy(hit.collider.gameObject);
+                        Bomb bombSc = hit.transform.GetComponent<Bomb>();
+                        photonView.RPC(nameof(Lift), RpcTarget.All,hit.transform.position ,bombSc.Id, bombSc.OwnerId,bombSc.BombType,bombSc.m_firePower,bombSc.m_isKick);
+                    }
+                }
             }
             else if (Input.GetKeyDown(KeyCode.H) && isHold )
             {
@@ -147,7 +155,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             animator.SetFloat("speedv", speed);
         }
     }
-
    
     protected virtual void Skill_One()
     {
@@ -176,15 +183,20 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    protected virtual void Lift(int id, int ownerId)
+    protected virtual void Lift(Vector3 pos,int id, int ownerId,int bombType,int fireType,bool isKick)
     {
         animator.SetTrigger("Throw");
-        Debug.Log("BombID" + id);
-        Debug.Log("BombOwnerId" + ownerId);
-        //   Debug.Log("Sender" + info.Sender.NickName);
-        //        Debug.Log("Sender" + info.Sender.UserId);
-        //      Debug.Log("LocalPlayer" + PhotonNetwork.LocalPlayer.UserId);
-        GameObject bomb = BombManager.Instance.BombSearch(id, ownerId);
+        GameObject bomb;
+        if (BombManager.Instance.BombSearch(id, ownerId) != null)
+        {
+             bomb = BombManager.Instance.BombSearch(id, ownerId);
+        }
+        else
+        {
+            bomb = BombManager.Instance.BombInstantiate(pos, id, ownerId, bombType, fireType, isKick);
+        }
+        
+        m_bomb = bomb;
         m_bombSc = bomb.GetComponent<Bomb>();
         m_bombSc.isBombWait = true;
         bomb.transform.SetParent(bombPos);
@@ -205,6 +217,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         animator.SetTrigger("Throwing");
         animator.SetBool("Hold", false);
         m_bomb.transform.parent = null;
+        m_bomb.GetComponent<SphereCollider>().enabled = true;
         if (photonView.IsMine)
         {
             StartCoroutine(ExitCollisionSwitch_Corutine());
@@ -213,7 +226,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         m_bombSc.ThrowingBall(angle, playerPos);
         isThrowing = true;
         isHold = false;
-        isTouchBomb = false;
         m_bombSc = null;
         m_bomb = null;
     }
@@ -356,8 +368,8 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         else if (other.CompareTag("Bomb"))
         {
             //    Debug.Log("ボム接触" + isTouchBomb);
-            isTouchBomb = true;
-            m_bomb = other.gameObject;
+      //      isTouchBomb = true;
+      //      m_bomb = other.gameObject;
         }
         else if (other.CompareTag("FreezeEffect"))
         {
@@ -369,7 +381,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         if (other.CompareTag("Bomb") && !isHold)
         {
             //    Debug.Log("ボム接触");
-            isTouchBomb = false;
+     //       isTouchBomb = false;
         }
     }
     

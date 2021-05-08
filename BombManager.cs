@@ -37,40 +37,36 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
         {
             bombClone = Instantiate(normalBomb, bombPos, normalBomb.transform.rotation);
             bombClones.Add(bombClone);
+            bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, isKick);
-       
-
+            bombSc.Initialized(id, playerActorId, firePower, bombType,isKick);
             return bombClone;
         }
         else if (bombType == 2)
         {
             bombClone = Instantiate(penetrationBomb, bombPos, penetrationBomb.transform.rotation);
             bombClones.Add(bombClone);
+            bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, isKick);
-      
-
+            bombSc.Initialized(id, playerActorId, firePower, bombType, isKick);
             return bombClone;
         }
         else if (bombType == 3)
         {
             bombClone = Instantiate(diffuseBomb, bombPos, diffuseBomb.transform.rotation);
             bombClones.Add(bombClone);
+            bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, isKick);
-     
-
+            bombSc.Initialized(id, playerActorId, firePower, bombType, isKick);
             return bombClone;
         }
         else if (bombType == 4)
         {
             bombClone = Instantiate(bounceBomb, bombPos, bounceBomb.transform.rotation);
             bombClones.Add(bombClone);
+            bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, isKick);
-     
-
+            bombSc.Initialized(id, playerActorId, firePower, bombType, isKick);
             return bombClone;
         }
         else
