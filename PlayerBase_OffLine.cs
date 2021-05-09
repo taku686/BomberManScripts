@@ -36,7 +36,8 @@ public class PlayerBase_OffLine : MonoBehaviour
     private GameObject m_bomb;
     private Bomb m_bombSc;
     private bool isTouchBomb;
-
+    private bool isThrowWait = true;
+    private bool isHoldWait= true;
     public int PlayerOwnerId { get; private set; }
 
     // Use this for initialization
@@ -63,24 +64,37 @@ public class PlayerBase_OffLine : MonoBehaviour
             {
                 Skill_Two();
             }
-            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow )
+            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow&&isHoldWait )
             {
+                isHoldWait = false;
+                StartCoroutine(HoldWait_Corutine());
                 if (Physics.Raycast(transform.position,transform.forward,out RaycastHit   hit, .7f,layerMask))
                 {
                     if (hit.collider.CompareTag("Bomb"))
-                    {
+                    {                     
                         hit.collider.GetComponent<SphereCollider>().enabled = false;
                         m_bomb = hit.collider.gameObject;
                         Bomb bombSc = hit.transform.GetComponent<Bomb>();
                         Lift(bombSc.Id, bombSc.OwnerId);
-                    }        
+                    }
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.H) && isHold)
+            else if (Input.GetKeyDown(KeyCode.H) && isHold&&!isThrowWait)
             {
+                isThrowWait = true;
                 float angle = (transform.rotation.eulerAngles.y) % 360;
                 Vector3 playerPos = transform.position;
                 Throw(angle, playerPos);
+            }
+            if (Input.GetKeyDown(KeyCode.K) && itemManager.isKick)
+            {
+                if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, .7f, layerMask))
+                {
+                    if (hit.collider.CompareTag("Bomb"))
+                    {
+                        hit.transform.GetComponent<Bomb>().m_isKick = true;                     
+                    }
+                }
             }
             if (isDead)
             {
@@ -131,11 +145,10 @@ public class PlayerBase_OffLine : MonoBehaviour
         animator.SetTrigger("Throw");
         GameObject bomb = BombManager.Instance.BombSearch(id, ownerId);
         m_bombSc = bomb.GetComponent<Bomb>();
-  //      m_bombSc.isHold = true;
         m_bombSc.isBombWait = true;
+        isHold = true;
         bomb.transform.SetParent(bombPos);
         bomb.transform.localPosition = Vector3.zero;
-        isHold = true;
         StartCoroutine(HoldUp());
     }
 
@@ -143,17 +156,18 @@ public class PlayerBase_OffLine : MonoBehaviour
     {
         yield return new WaitForSeconds(.5f);
         animator.SetBool("Hold", true);
+        yield return new WaitForSeconds(.5f);
+        isThrowWait = false;
     }
 
     protected void Throw(float angle, Vector3 playerPos)
     {
         animator.SetTrigger("Throwing");
-        animator.SetBool("Hold", false);
+        animator.SetBool("Hold", false);       
         m_bomb.transform.parent = null;
         StartCoroutine(ExitCollisionSwitch_Corutine());
         m_bomb.GetComponent<SphereCollider>().enabled = true;
         m_bombSc.angle = angle;
-//        m_bombSc.isHold = false;
         m_bombSc.ThrowingBall(angle, playerPos);
         isThrowing = true;
         isHold = false;
@@ -233,13 +247,19 @@ public class PlayerBase_OffLine : MonoBehaviour
         downTime = 0;
     }
 
-   
+    IEnumerator HoldWait_Corutine()
+    {
+        yield return new WaitForSeconds(1);
+        isHoldWait = true;
+    }
+
+
     /// <summary>
     /// Drops a bomb beneath the player
     /// </summary>
     protected void DropBomb(Vector3 bombPos, int bombId, int bombType, int firePower, bool isKick)
     {
-        BombManager.Instance.BombInstantiate(bombPos, bombId, 1, bombType, firePower, isKick);
+        BombManager.Instance.BombInstantiate(bombPos, bombId, 1, bombType, firePower);//, isKick);
     }
 
     protected int BombType()
@@ -403,7 +423,7 @@ public class PlayerBase_OffLine : MonoBehaviour
             dir = Vector3.left;
         }
         */
-        Debug.DrawRay(transform.position, transform.forward * .7f, Color.blue, .1f);
+     //   Debug.DrawRay(transform.position, transform.forward * .7f, Color.blue, .1f);
         
     }
 }

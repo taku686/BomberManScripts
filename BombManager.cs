@@ -25,7 +25,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
     }
 
 
-    public GameObject BombInstantiate(Vector3 bombPos, int id, int playerActorId, int bombType, int firePower, bool isKick)
+    public GameObject BombInstantiate(Vector3 bombPos, int id, int playerActorId, int bombType, int firePower)//, bool isKick)
     {
         GameObject bombClone;
         Bomb bombSc;
@@ -39,7 +39,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
             bombClones.Add(bombClone);
             bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, bombType,isKick);
+            bombSc.Initialized(id, playerActorId, firePower, bombType);//,isKick);
             return bombClone;
         }
         else if (bombType == 2)
@@ -48,7 +48,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
             bombClones.Add(bombClone);
             bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, bombType, isKick);
+            bombSc.Initialized(id, playerActorId, firePower, bombType);//, isKick);
             return bombClone;
         }
         else if (bombType == 3)
@@ -57,7 +57,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
             bombClones.Add(bombClone);
             bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, bombType, isKick);
+            bombSc.Initialized(id, playerActorId, firePower, bombType);//, isKick);
             return bombClone;
         }
         else if (bombType == 4)
@@ -66,7 +66,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
             bombClones.Add(bombClone);
             bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, bombType, isKick);
+            bombSc.Initialized(id, playerActorId, firePower, bombType);//, isKick);
             return bombClone;
         }
         else

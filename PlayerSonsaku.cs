@@ -64,7 +64,7 @@ public class PlayerSonsaku : PlayerBase
            
             if (angle == 0 || angle == 180)
             {
-                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower, isKick);
+                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower);//, isKick);
                 Bomb bombCloneSc = bombClone.GetComponent<Bomb>();
                 if (angle == 0)
                 {
@@ -81,7 +81,7 @@ public class PlayerSonsaku : PlayerBase
             }
             else if (angle == 90 || angle == 270)
             {
-                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower, isKick);
+                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower);//, isKick);
                 Bomb bombCloneSc = bombClone.GetComponent<Bomb>();
                 if (angle == 90)
                 {

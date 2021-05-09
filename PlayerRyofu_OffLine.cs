@@ -86,7 +86,7 @@ public class PlayerRyofu_OffLine : PlayerBase_OffLine
 
         foreach (var targetPos in createPos)
         {
-            GameObject bombClone = BombManager.Instance.BombInstantiate(new Vector3(targetPos.x + 2, 8, targetPos.z), bombId++, actorNum, BombType(), itemManager.firePower, itemManager.isKick);
+            GameObject bombClone = BombManager.Instance.BombInstantiate(new Vector3(targetPos.x + 2, 8, targetPos.z), bombId++, actorNum, BombType(), itemManager.firePower);//, itemManager.isKick);
             GameObject effect = Instantiate(effect_skill_two, new Vector3(bombClone.transform.position.x, bombClone.transform.position.y + 0.5f, bombClone.transform.position.z), Quaternion.identity);
             effect.transform.SetParent(bombClone.transform);
             Destroy(effect, 1.2f);

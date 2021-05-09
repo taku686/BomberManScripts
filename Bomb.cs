@@ -30,7 +30,7 @@ public class Bomb : MonoBehaviour
     public bool isBack;
     public bool isRight;
     public bool isLeft;
- public int m_firePower;
+    public int m_firePower;
     public bool m_isKick;
     private int bombType;
     //   public bool isHold;
@@ -49,12 +49,12 @@ public class Bomb : MonoBehaviour
     }
 
 
-    public virtual void Initialized(int id, int ownerId,int firePower,int bombType,bool isKick)
+    public virtual void Initialized(int id, int ownerId,int firePower,int bombType)//,bool isKick)
     {
         Id = id;
         OwnerId = ownerId;
         m_firePower = firePower;
-        m_isKick = isKick;
+  //      m_isKick = isKick;
         BombType = bombType;
     }
 
@@ -65,22 +65,22 @@ public class Bomb : MonoBehaviour
         if (angle == 0)
         {
             targetPosition = new Vector3(Mathf.RoundToInt(playerPos.x), 0.5f, Mathf.RoundToInt(playerPos.z + 3));
-            transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+            transform.DOJump(targetPosition, 2, 1, throwingSpeed);
         }
         else if (angle == 90)
         {
             targetPosition = new Vector3(Mathf.RoundToInt(playerPos.x + 3), 0.5f, Mathf.RoundToInt(playerPos.z));
-            transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+            transform.DOJump(targetPosition, 2, 1, throwingSpeed);
         }
         else if (angle == 180)
         {
             targetPosition = new Vector3(Mathf.RoundToInt(playerPos.x), 0.5f, Mathf.RoundToInt(playerPos.z - 3));
-            transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+            transform.DOJump(targetPosition, 2, 1, throwingSpeed);
         }
         else if (angle == 270)
         {
             targetPosition = new Vector3(Mathf.RoundToInt(playerPos.x - 3), 0.5f, Mathf.RoundToInt(playerPos.z));
-            transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+            transform.DOJump(targetPosition, 2, 1, throwingSpeed);
         }
     }
  

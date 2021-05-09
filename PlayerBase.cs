@@ -78,6 +78,8 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     [SerializeField]protected BoxCollider boxCollider_Collision;
     public bool isDead;
     protected int downTime = 0;
+    private bool isThrowWait = true;
+    private bool isHoldWait = true;
     public int PlayerOwnerId { get; private set; }
 
     // Use this for initialization
@@ -111,7 +113,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             else if (Input.GetKeyDown(KeyCode.J) && !isSkill_One && !isSkill_One_Rpc)
             {
                 Skill_One();
-            }
+            }          
             if (Input.GetKeyDown(KeyCode.L) && !isSkill_Two && !isActive_Skill_Two && isSkill_Two_Rpc)
             {
                 photonView.RPC(nameof(Skill_Two), RpcTarget.All);
@@ -120,26 +122,39 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             {
                 Skill_Two();
             }
-            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow )
+            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow&&isHoldWait )
+            {
+                isHoldWait = false;
+                StartCoroutine(HoldWait_Corutine());
+                if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, .7f, layerMask))
+                {
+                    if (hit.collider.CompareTag("Bomb"))
+                    {
+                        hit.collider.GetComponent<SphereCollider>().enabled = false;                  
+                        Bomb bombSc = hit.transform.GetComponent<Bomb>();
+                        photonView.RPC(nameof(Lift), RpcTarget.All,hit.transform.position ,bombSc.Id, bombSc.OwnerId,bombSc.BombType,bombSc.m_firePower);
+                    }
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.H) && isHold&&!isThrowWait )
+            {
+                isThrowWait = true;
+                float angle = (transform.rotation.eulerAngles.y) % 360;
+                Vector3 playerPos = transform.position;
+                photonView.RPC(nameof(Throw), RpcTarget.All, angle, playerPos);
+            }
+            if(Input.GetKeyDown(KeyCode.K) && itemManager.isKick)
             {
                 if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, .7f, layerMask))
                 {
                     if (hit.collider.CompareTag("Bomb"))
                     {
-                             hit.collider.GetComponent<SphereCollider>().enabled = false;
-                     //   Destroy(hit.collider.gameObject);
                         Bomb bombSc = hit.transform.GetComponent<Bomb>();
-                        photonView.RPC(nameof(Lift), RpcTarget.All,hit.transform.position ,bombSc.Id, bombSc.OwnerId,bombSc.BombType,bombSc.m_firePower,bombSc.m_isKick);
+                        photonView.RPC(nameof(Kick), RpcTarget.All, bombSc.Id, bombSc.OwnerId);
                     }
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.H) && isHold )
-            {
-                float angle = (transform.rotation.eulerAngles.y) % 360;
-                Vector3 playerPos = transform.position;
-                photonView.RPC(nameof(Throw), RpcTarget.All, angle, playerPos);
-            }
-            if (isDead)
+                if (isDead)
             {
                 isDead = false;
                 photonView.RPC(nameof(Die_Player), RpcTarget.All);
@@ -153,6 +168,19 @@ public class PlayerBase : MonoBehaviourPunCallbacks
 
             var speed = Mathf.Max(Mathf.Abs(h), Mathf.Abs(v));
             animator.SetFloat("speedv", speed);
+        }
+    }
+
+    [PunRPC]
+    protected void Kick(int id ,int ownerId)
+    {
+        if(BombManager.Instance.BombSearch(id,ownerId)!= null)
+        {
+            BombManager.Instance.BombSearch(id, ownerId).GetComponent<Bomb>().m_isKick = true;
+        }
+        else
+        {
+            return;
         }
     }
    
@@ -183,7 +211,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    protected virtual void Lift(Vector3 pos,int id, int ownerId,int bombType,int fireType,bool isKick)
+    protected virtual void Lift(Vector3 pos,int id, int ownerId,int bombType,int fireType)
     {
         animator.SetTrigger("Throw");
         GameObject bomb;
@@ -193,7 +221,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         }
         else
         {
-            bomb = BombManager.Instance.BombInstantiate(pos, id, ownerId, bombType, fireType, isKick);
+            bomb = BombManager.Instance.BombInstantiate(pos, id, ownerId, bombType, fireType);
         }
         
         m_bomb = bomb;
@@ -209,6 +237,8 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(.5f);
         animator.SetBool("Hold", true);
+        yield return new WaitForSeconds(.5f);
+        isThrowWait = false;
     }
 
     [PunRPC]
@@ -247,9 +277,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         UpdatePlayerMovement();        
     }
 
-    /// <summary>
-    /// Updates Player 2's movement and facing rotation using the arrow keys and drops bombs using Enter or Return
-    /// </summary>
     protected virtual void UpdatePlayerMovement()
     {
         if (Input.GetKey(KeyCode.UpArrow) && !isSkill_One && !isSkill_Two)
@@ -293,7 +320,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
    0.4f,
     Mathf.RoundToInt(myTransform.position.z)
 );
-            photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower, isKick);
+            photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower);
         }
     }
 
@@ -304,13 +331,19 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         downTime = 0;
     }
 
+    IEnumerator HoldWait_Corutine()
+    {
+        yield return new WaitForSeconds(1);
+        isHoldWait = true;
+    }
+
     [PunRPC]
     /// <summary>
     /// Drops a bomb beneath the player
     /// </summary>
-    protected void DropBomb(Vector3 bombPos,int bombId,int bombType,int firePower,bool isKick,PhotonMessageInfo info)
+    protected void DropBomb(Vector3 bombPos,int bombId,int bombType,int firePower,PhotonMessageInfo info)
     {
-        BombManager.Instance.BombInstantiate(bombPos, bombId, info.Sender.ActorNumber, bombType, firePower, isKick);
+        BombManager.Instance.BombInstantiate(bombPos, bombId, info.Sender.ActorNumber, bombType, firePower);
     }
 
     protected int BombType()

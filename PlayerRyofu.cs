@@ -114,7 +114,7 @@ public class PlayerRyofu : PlayerBase
 
         foreach (var targetPos in bombCreateData.vector3s)
         {
-            GameObject bombClone = BombManager.Instance.BombInstantiate(new Vector3(targetPos.x + 2, 8, targetPos.z), bombId++, actorNum, bombCreateData.bombType, bombCreateData.firePower, bombCreateData.isKick);
+            GameObject bombClone = BombManager.Instance.BombInstantiate(new Vector3(targetPos.x + 2, 8, targetPos.z), bombId++, actorNum, bombCreateData.bombType, bombCreateData.firePower);//, bombCreateData.isKick);
             GameObject effect = Instantiate(effect_skill_two, new Vector3(bombClone.transform.position.x, bombClone.transform.position.y + 0.5f, bombClone.transform.position.z), Quaternion.identity);
             effect.transform.SetParent(bombClone.transform);
             Destroy(effect, 1.2f);
