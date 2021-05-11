@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour
     private string m_roomName;
     private string newRoomName;
     private int int_BattleModeNum=10000;
-    private int int_HeartOrTimeNum = 2;
+    private int int_HeartOrTimeNum = 3;
     private byte byte_ParticipationNum = 2;
     private int int_RoundNum = 1;
 
@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour
     public void On_Click_RightArrow_BattleMode()
     {
         int_BattleModeNum++;
-        if (int_BattleModeNum % 2 == 1)
+        if (int_BattleModeNum % 2 == 0)
         {
             GManager.Instance.battleMode = GManager.BattleMode.TimeMode;
             obj_BMExplanation_Point.SetActive(true);
@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
             obj_HeartNum.SetActive(false);
             obj_TimeNum.SetActive(true);
         }
-        else if (int_BattleModeNum % 2 == 0)
+        else if (int_BattleModeNum % 2 == 1)
         {
             GManager.Instance.battleMode = GManager.BattleMode.SurvivalMode;
             obj_BMExplanation_Point.SetActive(false);
@@ -78,7 +78,7 @@ public class UIManager : MonoBehaviour
     public void On_Click_LeftArrow_BattleMode()
     {
         int_BattleModeNum--;
-        if (int_BattleModeNum % 2 == 1)
+        if (int_BattleModeNum % 2 == 0)
         {
             GManager.Instance.battleMode = GManager.BattleMode.TimeMode;
             obj_BMExplanation_Point.SetActive(true);
@@ -90,7 +90,7 @@ public class UIManager : MonoBehaviour
             obj_HeartNum.SetActive(false);
             obj_TimeNum.SetActive(true);
         }
-        else if (int_BattleModeNum % 2 == 0)
+        else if (int_BattleModeNum % 2 == 1)
         {
             GManager.Instance.battleMode = GManager.BattleMode.SurvivalMode;
             obj_BMExplanation_Point.SetActive(false);

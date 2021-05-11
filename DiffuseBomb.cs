@@ -22,8 +22,8 @@ public class DiffuseBomb : Bomb
         }
 
         // 爆弾の位置に爆発エフェクトを作成
-        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
+        //  Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        BombManager.Instance.InstantiateExplosionEffect(transform.position, m_explosionNum);
         // 爆弾を非表示にする
         GetComponent<MeshRenderer>().enabled = false;
         exploded = true;
@@ -38,12 +38,15 @@ public class DiffuseBomb : Bomb
         {
             for (int j = 0; j < m_firePower; j++)
             {
+                /*
                 Instantiate
                (
                    explosionPrefab,
                    new Vector3(transform.position.x + i - m_firePower / 2, transform.position.y, transform.position.z + j - m_firePower / 2),
                    explosionPrefab.transform.rotation
                );
+                */
+                BombManager.Instance.InstantiateExplosionEffect(new Vector3(transform.position.x + i - m_firePower / 2, transform.position.y, transform.position.z + j - m_firePower / 2),m_explosionNum);
             }
         }
         RaycastHit[] hits = Physics.BoxCastAll(transform.position, new Vector3(m_firePower / 2, m_firePower / 2, m_firePower / 2), Vector3.up, Quaternion.identity, 1, levelMask);

@@ -80,12 +80,13 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     protected int downTime = 0;
     private bool isThrowWait = true;
     private bool isHoldWait = true;
-    public int PlayerOwnerId { get; private set; }
+    protected BattleManager sc_battleManager;
+    public int int_playerNum;
 
     // Use this for initialization
     protected virtual void Start()
     {
-             Debug.Log("LocalPlayer" + PhotonNetwork.LocalPlayer.ActorNumber);
+   //          Debug.Log("LocalPlayer" + PhotonNetwork.LocalPlayer.ActorNumber);
         rigidBody = GetComponent<Rigidbody>();
         myTransform = transform;
         photonView.RPC(nameof(Initialized), RpcTarget.All);
@@ -97,6 +98,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         Debug.Log("初期動作");
         itemManager = GameObject.Find("ItemManager").GetComponent<ItemManager>();
         stageUIManager = GameObject.Find("UIManager").GetComponent<StageUIManager>();
+        sc_battleManager = GameObject.Find("GameManager").GetComponent<BattleManager>();
     }
 
     // Update is called once per frame
@@ -132,7 +134,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
                     {
                         hit.collider.GetComponent<SphereCollider>().enabled = false;                  
                         Bomb bombSc = hit.transform.GetComponent<Bomb>();
-                        photonView.RPC(nameof(Lift), RpcTarget.All,hit.transform.position ,bombSc.Id, bombSc.OwnerId,bombSc.BombType,bombSc.m_firePower);
+                        photonView.RPC(nameof(Lift), RpcTarget.All,hit.transform.position ,bombSc.Id, bombSc.OwnerId,bombSc.BombType,bombSc.m_firePower,GManager.Instance.playerNum);
                     }
                 }
             }
@@ -154,11 +156,13 @@ public class PlayerBase : MonoBehaviourPunCallbacks
                     }
                 }
             }
-                if (isDead)
+
+            if (isDead)
             {
                 isDead = false;
-                photonView.RPC(nameof(Die_Player), RpcTarget.All);
+                photonView.RPC(nameof(Die_Player), RpcTarget.All,int_playerNum);
             }
+            
                    
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
@@ -211,7 +215,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    protected virtual void Lift(Vector3 pos,int id, int ownerId,int bombType,int fireType)
+    protected virtual void Lift(Vector3 pos,int id, int ownerId,int bombType,int fireType,int explosionNum)
     {
         animator.SetTrigger("Throw");
         GameObject bomb;
@@ -221,7 +225,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         }
         else
         {
-            bomb = BombManager.Instance.BombInstantiate(pos, id, ownerId, bombType, fireType);
+            bomb = BombManager.Instance.BombInstantiate(pos, id, ownerId, bombType, fireType,explosionNum);
         }
         
         m_bomb = bomb;
@@ -320,7 +324,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
    0.4f,
     Mathf.RoundToInt(myTransform.position.z)
 );
-            photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower);
+            photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower, GManager.Instance.playerNum);
         }
     }
 
@@ -341,9 +345,9 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     /// <summary>
     /// Drops a bomb beneath the player
     /// </summary>
-    protected void DropBomb(Vector3 bombPos,int bombId,int bombType,int firePower,PhotonMessageInfo info)
+    protected void DropBomb(Vector3 bombPos,int bombId,int bombType,int firePower,int explosionNum,PhotonMessageInfo info)
     {
-        BombManager.Instance.BombInstantiate(bombPos, bombId, info.Sender.ActorNumber, bombType, firePower);
+        BombManager.Instance.BombInstantiate(bombPos, bombId, info.Sender.ActorNumber, bombType, firePower,explosionNum);
     }
 
     protected int BombType()
@@ -442,7 +446,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             {
                 transform.position = new Vector3(10, 0, 0);
             }
-            photonView.RPC(nameof(Die_Player), RpcTarget.All);
+            photonView.RPC(nameof(Die_Player), RpcTarget.All,0);
         }
     }
 
@@ -454,14 +458,57 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    protected  void Die_Player()
+    protected  void Die_Player(int playerNum)
     {
-        StartCoroutine(Die());
+        StartCoroutine(Die(playerNum));
     }
 
-    public virtual IEnumerator Die()
+    public virtual IEnumerator Die(int playerNum)
     {
         boxCollider_Collision.isTrigger = false;
+        if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode)
+        {
+            if (playerNum == 1)
+            {
+                sc_battleManager.UpdateScore(10, 1);
+            }
+            else if (playerNum == 2)
+            {
+                sc_battleManager.UpdateScore(10, 2);
+            }
+            else if (playerNum == 3)
+            {
+                sc_battleManager.UpdateScore(10, 3);
+            }
+            else if (playerNum == 4)
+            {
+                sc_battleManager.UpdateScore(10, 4);
+            }
+            else
+            {
+                sc_battleManager.UpdateScore(0, 0);
+            }
+        }
+        else if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.SurvivalMode)
+        {
+            if (GManager.Instance.playerNum == 1)
+            {
+                sc_battleManager.UpdateScore(-1, 1);
+            }
+            else if (GManager.Instance.playerNum == 2)
+            {
+                sc_battleManager.UpdateScore(-1, 2);
+            }
+            else if (GManager.Instance.playerNum == 3)
+            {
+                sc_battleManager.UpdateScore(-1, 3);
+            }
+            else if (GManager.Instance.playerNum == 4)
+            {
+                sc_battleManager.UpdateScore(-1, 4);
+            }
+        }
+        
         float time = 0;
         while (time < 2)
         {

@@ -122,15 +122,14 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         timeNum = 30;
         timer.text = timeNum.ToString();
         GManager.Instance.playerNum = PhotonNetwork.CurrentRoom.Players.Count;
-        if (PhotonNetwork.IsMasterClient)
-        {
-            PhotonNetwork.CurrentRoom.SetTimeUpdate(GManager.Instance.time * 60);
-        }
         playerClone = PhotonNetwork.Instantiate(GManager.Instance.CharacterInstantiate(GManager.Instance.selectedCharacterNum).name, new Vector3(-10 + (PhotonNetwork.CurrentRoom.Players.Count - 1) * 1.5f, 0.5f, -8.5f), Quaternion.Euler(0, 180, 0));
         PhotonNetwork.LocalPlayer.NickName = PhotonNetwork.CurrentRoom.Players.Count.ToString();
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.CurrentRoom.SetStageNum(GManager.Instance.stageNum);
+            PhotonNetwork.CurrentRoom.SetTimeUpdate(GManager.Instance.time * 60);
+            PhotonNetwork.CurrentRoom.SetHeartNum(GManager.Instance.heart);
+            PhotonNetwork.CurrentRoom.SetBatttleMode(GManager.Instance.battleMode);
         }
  //       Debug.Log("部屋の人数" + PhotonNetwork.CurrentRoom.Players.Count);
     }

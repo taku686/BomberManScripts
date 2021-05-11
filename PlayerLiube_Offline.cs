@@ -134,7 +134,6 @@ public class PlayerLiube_Offline :PlayerBase_OffLine
             StartCoroutine(DropBomb_DownTime());
             int bombType = BombType();
             int firePower = itemManager.firePower;
-            bool isKick = itemManager.isKick;
             var pos = new Vector3
 (
     Mathf.RoundToInt(myTransform.position.x),
@@ -142,7 +141,7 @@ public class PlayerLiube_Offline :PlayerBase_OffLine
     Mathf.RoundToInt(myTransform.position.z)
 );
 
-            DropBomb(pos, bombId++, bombType, firePower, isKick);
+            DropBomb(pos, bombId++, bombType, firePower);
         }
     }
 }

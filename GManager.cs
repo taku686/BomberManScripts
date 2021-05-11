@@ -5,6 +5,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using System;
 
 public class GManager : SingletonMonoBehaviour<GManager>
 {
@@ -42,6 +43,7 @@ public class GManager : SingletonMonoBehaviour<GManager>
     {
         SurvivalMode,
         TimeMode,
+        empty,
     }
 
 

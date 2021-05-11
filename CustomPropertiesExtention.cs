@@ -4,6 +4,7 @@ using UnityEngine;
 using ExitGames.Client.Photon;
 using Photon.Realtime;
 using Photon.Pun;
+using System;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public static class CustomPropertiesExtention 
@@ -13,6 +14,8 @@ public static class CustomPropertiesExtention
     private const string playerNameKey = "pName";
     private const string stageNumKey = "sNum";
     private const string timeNumKey = "tNum";
+    private const string heartNumKey = "hNum";
+    private const string battleModeKey = "bMode";
     private static readonly Hashtable hashtable = new Hashtable();
 
     public static void SetPlayerNum(this Player player, int actorNum)
@@ -52,6 +55,20 @@ public static class CustomPropertiesExtention
         hashtable.Clear();
     }
 
+    public static void SetHeartNum(this Room room, int heart)
+    {
+        hashtable[heartNumKey] = heart;
+        room.SetCustomProperties(hashtable);
+        hashtable.Clear();
+    }
+
+    public static void SetBatttleMode(this Room room,GManager.BattleMode battleMode)
+    {
+        hashtable[battleModeKey] = battleMode;
+        room.SetCustomProperties(hashtable);
+        hashtable.Clear();
+    }
+
     public static int GetPlayerNum(this Player player)
     {
         return (player.CustomProperties[playerNumKey] is int actorNum) ? actorNum : 0;
@@ -76,5 +93,15 @@ public static class CustomPropertiesExtention
     public static float GetTimeUpdate(this Room room)
     {
         return (room.CustomProperties[timeNumKey] is float time) ? time : 0;
+    }
+
+    public static int GetHeartNum(this Room room)
+    {
+        return (room.CustomProperties[heartNumKey] is int heart) ? heart : 0;
+    }
+
+    public static int GetBattleMode(this Room room)
+    {
+          return ((int)room.CustomProperties[battleModeKey] is int battleMode) ? battleMode : -1;
     }
 }

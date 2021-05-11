@@ -10,7 +10,7 @@ public class Bomb : MonoBehaviour
 {
     [SerializeField] protected int id;
     [SerializeField] protected int ownerId;
-    public GameObject explosionPrefab;
+ //   public GameObject explosionPrefab;
     public GameObject explosionPrefab_sub;
     public LayerMask levelMask;
     protected bool exploded;
@@ -33,6 +33,7 @@ public class Bomb : MonoBehaviour
     public int m_firePower;
     public bool m_isKick;
     private int bombType;
+    public int m_explosionNum;
     //   public bool isHold;
     public int Id { get { return id; } private set { id = value; } }
     public int OwnerId { get { return ownerId; } private set { ownerId = value; } }
@@ -49,13 +50,14 @@ public class Bomb : MonoBehaviour
     }
 
 
-    public virtual void Initialized(int id, int ownerId,int firePower,int bombType)//,bool isKick)
+    public virtual void Initialized(int id, int ownerId,int firePower,int bombType,int explosionNum)//,bool isKick)
     {
         Id = id;
         OwnerId = ownerId;
         m_firePower = firePower;
   //      m_isKick = isKick;
         BombType = bombType;
+        m_explosionNum = explosionNum;
     }
 
     public void ThrowingBall(float angle,Vector3 playerPos)
@@ -100,8 +102,8 @@ public class Bomb : MonoBehaviour
         }
 
         // 爆弾の位置に爆発エフェクトを作成
-       Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
+        //   Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        BombManager.Instance.InstantiateExplosionEffect(transform.position, m_explosionNum);
         // 爆弾を非表示にする
         GetComponent<MeshRenderer>().enabled = false;
         exploded = true;
@@ -146,22 +148,28 @@ public class Bomb : MonoBehaviour
             {
                 // 爆風を広げるために、
                 // 爆発エフェクトのオブジェクトを作成
+                /*
                 Instantiate
                    (
                        explosionPrefab,
                        transform.position + (i * direction),
                        explosionPrefab.transform.rotation
                    );
+                */
+                BombManager.Instance.InstantiateExplosionEffect(transform.position + (i * direction), m_explosionNum);
             }
             // 爆風を広げた先に壊れる壁が存在する場合
             else if (hit.collider.CompareTag("BreakingWall"))
             {
+                /*
                 Instantiate
                  (
                      explosionPrefab,
                      transform.position + (i * direction),
                      explosionPrefab.transform.rotation
                  );
+                */
+                BombManager.Instance.InstantiateExplosionEffect(transform.position + (i * direction), m_explosionNum);
                 break;
             }
             // 爆風を広げた先に壁が存在する場合
@@ -180,12 +188,15 @@ public class Bomb : MonoBehaviour
             }
             else
             {
+                /*
                 Instantiate
                  (
                      explosionPrefab,
                      transform.position + (i * direction),
                      explosionPrefab.transform.rotation
                  );
+                */
+                BombManager.Instance.InstantiateExplosionEffect(transform.position + (i * direction), m_explosionNum);
             }
             // 0.05 秒待ってから、次のマスに爆風を広げる
             yield return new WaitForSeconds(0.05f);

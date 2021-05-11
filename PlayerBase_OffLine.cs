@@ -14,7 +14,7 @@ public class PlayerBase_OffLine : MonoBehaviour
     public bool isActive_Skill_Two;
     public static bool isHold;
     public static bool isThrowing;
-    public bool isDead;
+  //  public bool isDead;
     protected Rigidbody rigidBody;
     protected Transform myTransform; 
     protected StageUIManager stageUIManager;   
@@ -34,6 +34,7 @@ public class PlayerBase_OffLine : MonoBehaviour
     [SerializeField] LayerMask layerMask;   
     [SerializeField] Transform bombPos;
     private GameObject m_bomb;
+    private BattleManager sc_battleManager;
     private Bomb m_bombSc;
     private bool isTouchBomb;
     private bool isThrowWait = true;
@@ -47,6 +48,7 @@ public class PlayerBase_OffLine : MonoBehaviour
         myTransform = transform;
         itemManager = GameObject.Find("ItemManager").GetComponent<ItemManager>();
         stageUIManager = GameObject.Find("UIManager").GetComponent<StageUIManager>();
+        sc_battleManager = GameObject.Find("GameManager").GetComponent<BattleManager>();
     }
 
     // Update is called once per frame
@@ -96,11 +98,13 @@ public class PlayerBase_OffLine : MonoBehaviour
                     }
                 }
             }
+            /*
             if (isDead)
             {
                 isDead = false;
                 StartCoroutine(Die());
             }
+            */
 
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
@@ -236,7 +240,7 @@ public class PlayerBase_OffLine : MonoBehaviour
     Mathf.RoundToInt(myTransform.position.z)
 );
 
-            DropBomb(pos, bombId++, bombType, firePower, isKick);
+            DropBomb(pos, bombId++, bombType, firePower);
         }
     }
 
@@ -257,9 +261,9 @@ public class PlayerBase_OffLine : MonoBehaviour
     /// <summary>
     /// Drops a bomb beneath the player
     /// </summary>
-    protected void DropBomb(Vector3 bombPos, int bombId, int bombType, int firePower, bool isKick)
+    protected void DropBomb(Vector3 bombPos, int bombId, int bombType, int firePower)
     {
-        BombManager.Instance.BombInstantiate(bombPos, bombId, 1, bombType, firePower);//, isKick);
+        BombManager.Instance.BombInstantiate(bombPos, bombId, 1, bombType, firePower,GManager.Instance.playerNum);//, isKick);
     }
 
     protected int BombType()
@@ -372,6 +376,7 @@ public class PlayerBase_OffLine : MonoBehaviour
     public virtual IEnumerator Die()
     {
         boxCollider_Collision.isTrigger = false;
+        
         float time = 0;
         while (time < 2)
         {

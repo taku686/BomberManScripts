@@ -30,12 +30,15 @@ public class PenetrationBomb : Bomb
             {
                 // 爆風を広げるために、
                 // 爆発エフェクトのオブジェクトを作成
+                /*
                 Instantiate
                  (
                      explosionPrefab,
                      transform.position + (i * direction),
                      explosionPrefab.transform.rotation
                  );
+                */
+                BombManager.Instance.InstantiateExplosionEffect(transform.position + (i * direction), m_explosionNum);
             }
             else if (hit.collider.CompareTag("Wall") || hit.collider.CompareTag("ShieldEffect"))
             {
