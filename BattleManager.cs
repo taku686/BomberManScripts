@@ -6,17 +6,19 @@ using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviourPunCallbacks
 {
-    [SerializeField] Text txt_timeText;
-    [SerializeField] Text txt_player1Score;
-    [SerializeField] Text txt_player2Score;
-    [SerializeField] Text txt_player3Score;
-    [SerializeField] Text txt_player4Score;
+    [SerializeField] Text m_txt_timeText;
+    [SerializeField] Text m_txt_player1Score;
+    [SerializeField] Text m_txt_player2Score;
+    [SerializeField] Text m_txt_player3Score;
+    [SerializeField] Text m_txt_player4Score;
+    [SerializeField] Text m_txt_resultText;
     private double m_double_time;
     private float m_float_time;
-    public int int_player1Score;
-    public int int_player2Score;
-    public int int_player3Score;
-    public int int_player4Score;
+ //   public int int_player1Score;
+ //   public int int_player2Score;
+ //   public int int_player3Score;
+ //   public int int_player4Score;
+    public int[] m_array_playerScore= new int[4];
 
     // Start is called before the first frame update
     void Start()
@@ -27,19 +29,19 @@ public class BattleManager : MonoBehaviourPunCallbacks
         {
             m_double_time = PhotonNetwork.Time;
             m_float_time = PhotonNetwork.CurrentRoom.GetTimeUpdate();
-            txt_timeText.text = PhotonNetwork.CurrentRoom.GetTimeUpdate().ToString();
-            txt_player1Score.text = 0.ToString();
-            txt_player2Score.text = 0.ToString();
-            txt_player3Score.text = 0.ToString();
-            txt_player4Score.text = 0.ToString();
+            m_txt_timeText.text = PhotonNetwork.CurrentRoom.GetTimeUpdate().ToString();
+            m_txt_player1Score.text = 0.ToString();
+            m_txt_player2Score.text = 0.ToString();
+            m_txt_player3Score.text = 0.ToString();
+            m_txt_player4Score.text = 0.ToString();
         }
         else if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.SurvivalMode && !GManager.Instance.isOffLine)
         {
-            txt_timeText.text = "∞";
-            txt_player1Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
-            txt_player2Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
-            txt_player3Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
-            txt_player4Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
+            m_txt_timeText.text = "∞";
+            m_txt_player1Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
+            m_txt_player2Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
+            m_txt_player3Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
+            m_txt_player4Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
         }
     }
 
@@ -58,7 +60,21 @@ public class BattleManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode && !GManager.Instance.isOffLine)
         {
-            txt_timeText.text = PhotonNetwork.CurrentRoom.GetTimeUpdate().ToString();
+            m_txt_timeText.text = PhotonNetwork.CurrentRoom.GetTimeUpdate().ToString();
+        }
+        if (PhotonNetwork.CurrentRoom.GetTimeUpdate() <= 0)
+        {
+            int highScore = 0;
+            for (int i = 0; i < 4; i++)
+            {
+                if (highScore < m_array_playerScore[i])
+                {
+                    m_txt_resultText.enabled = true;
+                    highScore = m_array_playerScore[i];
+                    m_txt_resultText.text = $"Player{i + 1}勝利";
+                }
+            }
+
         }
     }
 
@@ -66,23 +82,23 @@ public class BattleManager : MonoBehaviourPunCallbacks
     {
         if (Player == 1)
         {
-            int_player1Score += score;
-            txt_player1Score.text = int_player1Score.ToString();
+            m_array_playerScore[0] += score;
+            m_txt_player1Score.text = m_array_playerScore[0].ToString();
         }
         else if (Player == 2)
         {
-            int_player2Score += score;
-            txt_player2Score.text = int_player2Score.ToString();
+            m_array_playerScore[1] += score;
+            m_txt_player2Score.text = m_array_playerScore[1].ToString();
         }
         else if (Player == 3)
         {
-            int_player3Score += score;
-            txt_player3Score.text = int_player3Score.ToString();
+            m_array_playerScore[2] += score;
+            m_txt_player3Score.text = m_array_playerScore[2].ToString();
         }
         else if (Player == 4)
         {
-            int_player4Score += score;
-            txt_player4Score.text = int_player4Score.ToString();
+            m_array_playerScore[3] += score;
+            m_txt_player4Score.text = m_array_playerScore[3].ToString();
         }
         else
         {
