@@ -7,41 +7,39 @@ using UnityEngine.UI;
 public class BattleManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] Text m_txt_timeText;
-    [SerializeField] Text m_txt_player1Score;
-    [SerializeField] Text m_txt_player2Score;
-    [SerializeField] Text m_txt_player3Score;
-    [SerializeField] Text m_txt_player4Score;
+    [SerializeField] GameObject[] m_obj_PlayerScore = new GameObject[4];
+    [SerializeField] Text[] m_txt_playerScore = new Text[4];
     [SerializeField] Text m_txt_resultText;
     private double m_double_time;
     private float m_float_time;
- //   public int int_player1Score;
- //   public int int_player2Score;
- //   public int int_player3Score;
- //   public int int_player4Score;
+ 
     public int[] m_array_playerScore= new int[4];
 
     // Start is called before the first frame update
     void Start()
     {
         GManager.Instance.PlayerInstantiate();
-        Debug.Log("バトルモード" + PhotonNetwork.CurrentRoom.GetBattleMode());
+  //      Debug.Log("バトルモード" + PhotonNetwork.CurrentRoom.GetBattleMode());
         if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode && !GManager.Instance.isOffLine)
         {
             m_double_time = PhotonNetwork.Time;
             m_float_time = PhotonNetwork.CurrentRoom.GetTimeUpdate();
             m_txt_timeText.text = PhotonNetwork.CurrentRoom.GetTimeUpdate().ToString();
-            m_txt_player1Score.text = 0.ToString();
-            m_txt_player2Score.text = 0.ToString();
-            m_txt_player3Score.text = 0.ToString();
-            m_txt_player4Score.text = 0.ToString();
+            for(int i = 0; i < PhotonNetwork.CurrentRoom.MaxPlayers; i++)
+            {
+                m_obj_PlayerScore[i].SetActive(true);
+                m_txt_playerScore[i].text = 0.ToString();
+            }
         }
         else if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.SurvivalMode && !GManager.Instance.isOffLine)
         {
             m_txt_timeText.text = "∞";
-            m_txt_player1Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
-            m_txt_player2Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
-            m_txt_player3Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
-            m_txt_player4Score.text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
+            for(int i = 0; i < PhotonNetwork.CurrentRoom.MaxPlayers; i++)
+            {
+                m_obj_PlayerScore[i].SetActive(true);
+                m_txt_playerScore[i].text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
+                m_array_playerScore[i] = PhotonNetwork.CurrentRoom.GetHeartNum();
+            }
         }
     }
 
@@ -62,7 +60,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         {
             m_txt_timeText.text = PhotonNetwork.CurrentRoom.GetTimeUpdate().ToString();
         }
-        if (PhotonNetwork.CurrentRoom.GetTimeUpdate() <= 0)
+        if (PhotonNetwork.CurrentRoom.GetTimeUpdate() <= 0&&PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode)
         {
             int highScore = 0;
             for (int i = 0; i < 4; i++)
@@ -76,6 +74,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
 
         }
+       
     }
 
     public void UpdateScore(int score, int Player)
@@ -83,26 +82,45 @@ public class BattleManager : MonoBehaviourPunCallbacks
         if (Player == 1)
         {
             m_array_playerScore[0] += score;
-            m_txt_player1Score.text = m_array_playerScore[0].ToString();
+            m_txt_playerScore[0].text = m_array_playerScore[0].ToString();
         }
         else if (Player == 2)
         {
             m_array_playerScore[1] += score;
-            m_txt_player2Score.text = m_array_playerScore[1].ToString();
+            m_txt_playerScore[1].text = m_array_playerScore[1].ToString();
         }
         else if (Player == 3)
         {
             m_array_playerScore[2] += score;
-            m_txt_player3Score.text = m_array_playerScore[2].ToString();
+            m_txt_playerScore[2].text = m_array_playerScore[2].ToString();
         }
         else if (Player == 4)
         {
             m_array_playerScore[3] += score;
-            m_txt_player4Score.text = m_array_playerScore[3].ToString();
+            m_txt_playerScore[3].text = m_array_playerScore[3].ToString();
         }
         else
         {
             return;
+        }
+        if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.SurvivalMode)
+        {
+            int deadPlayer = 0;
+            for (int i = 0; i < PhotonNetwork.CurrentRoom.MaxPlayers; i++)
+            {
+                if (m_array_playerScore[i] <= 0)
+                {
+                    deadPlayer++;
+                }
+            }
+            for (int i = 0; i < PhotonNetwork.CurrentRoom.MaxPlayers; i++)
+            {
+                if (deadPlayer == PhotonNetwork.CurrentRoom.MaxPlayers - 1 && m_array_playerScore[i] > 0)
+                {
+                    m_txt_resultText.enabled = true;
+                    m_txt_resultText.text = $"Player{i + 1}勝利";
+                }
+            }
         }
     }
 

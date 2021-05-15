@@ -151,7 +151,6 @@ public class PlayerLiube : PlayerBase
    0.4f,
     Mathf.RoundToInt(myTransform.position.z)
 );
-
             photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower, GManager.Instance.playerNum);
         }
     }

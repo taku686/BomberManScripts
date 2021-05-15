@@ -18,28 +18,28 @@ public class PlayerHealth : MonoBehaviour
                 //        Debug.Log("爆風検知");
                 player.dead = true;
                 player.isDead = true;
-                player.int_playerNum = 1;               
+           //     player.int_playerNum = 1;               
             }
             else if (other.CompareTag("Explosion2") && !player.dead && GManager.Instance.playerNum != 2)
             {
                 //        Debug.Log("爆風検知");
                 player.dead = true;
                 player.isDead = true;
-                player.int_playerNum = 2;                
+            //    player.int_playerNum = 2;                
             }
             else if (other.CompareTag("Explosion3") && !player.dead && GManager.Instance.playerNum != 3)
             {
                 //        Debug.Log("爆風検知");
                 player.dead = true;
                 player.isDead = true;
-                player.int_playerNum = 3;
+           //     player.int_playerNum = 3;
             }
             else if (other.CompareTag("Explosion4") && !player.dead && GManager.Instance.playerNum != 4)
             {
                 //        Debug.Log("爆風検知");
                 player.dead = true;
                 player.isDead = true;
-                player.int_playerNum = 4;
+           //     player.int_playerNum = 4;
             }
         }
         else

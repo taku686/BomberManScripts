@@ -160,7 +160,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             if (isDead)
             {
                 isDead = false;
-                photonView.RPC(nameof(Die_Player), RpcTarget.All,int_playerNum);
+                photonView.RPC(nameof(Die_Player), RpcTarget.All,GManager.Instance.playerNum);
             }
             
                    
@@ -402,26 +402,11 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             itemManager.isDiffuse = false;
             itemManager.isBounce = true;
         }
-        else if (other.CompareTag("Bomb"))
-        {
-            //    Debug.Log("ボム接触" + isTouchBomb);
-      //      isTouchBomb = true;
-      //      m_bomb = other.gameObject;
-        }
         else if (other.CompareTag("FreezeEffect"))
         {
             StartCoroutine(FreezeMove());
         }
     }
-    protected virtual void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Bomb") && !isHold)
-        {
-            //    Debug.Log("ボム接触");
-     //       isTouchBomb = false;
-        }
-    }
-    
     private void OnCollisionStay(Collision collision)
     {
         Vector3 dir = collision.transform.localPosition - transform.position;
@@ -491,19 +476,19 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         }
         else if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.SurvivalMode)
         {
-            if (GManager.Instance.playerNum == 1)
+            if (playerNum == 1)
             {
                 sc_battleManager.UpdateScore(-1, 1);
             }
-            else if (GManager.Instance.playerNum == 2)
+            else if (playerNum == 2)
             {
                 sc_battleManager.UpdateScore(-1, 2);
             }
-            else if (GManager.Instance.playerNum == 3)
+            else if (playerNum == 3)
             {
                 sc_battleManager.UpdateScore(-1, 3);
             }
-            else if (GManager.Instance.playerNum == 4)
+            else if (playerNum == 4)
             {
                 sc_battleManager.UpdateScore(-1, 4);
             }
