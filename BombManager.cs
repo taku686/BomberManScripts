@@ -12,6 +12,10 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
     [SerializeField] GameObject penetrationBomb;
     [SerializeField] GameObject diffuseBomb;
     [SerializeField] GameObject bounceBomb;
+    [SerializeField] GameObject obj_player1ExplosionEffect;
+    [SerializeField] GameObject obj_player2ExplosionEffect;
+    [SerializeField] GameObject obj_player3ExplosionEffect;
+    [SerializeField] GameObject obj_player4ExplosionEffect;
     [SerializeField] ItemManager itemManager;
     public int bombNumOnStage = 1;
     protected override void Awake()
@@ -25,7 +29,7 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
     }
 
 
-    public GameObject BombInstantiate(Vector3 bombPos, int id, int playerActorId, int bombType, int firePower, bool isKick)
+    public GameObject BombInstantiate(Vector3 bombPos, int id, int playerActorId, int bombType, int firePower, int explosionNum)//, bool isKick)
     {
         GameObject bombClone;
         Bomb bombSc;
@@ -37,40 +41,36 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
         {
             bombClone = Instantiate(normalBomb, bombPos, normalBomb.transform.rotation);
             bombClones.Add(bombClone);
+            bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, isKick);
-       
-
+            bombSc.Initialized(id, playerActorId, firePower, bombType, explosionNum);//,isKick);
             return bombClone;
         }
         else if (bombType == 2)
         {
             bombClone = Instantiate(penetrationBomb, bombPos, penetrationBomb.transform.rotation);
             bombClones.Add(bombClone);
+            bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, isKick);
-      
-
+            bombSc.Initialized(id, playerActorId, firePower, bombType, explosionNum);//, isKick);
             return bombClone;
         }
         else if (bombType == 3)
         {
             bombClone = Instantiate(diffuseBomb, bombPos, diffuseBomb.transform.rotation);
             bombClones.Add(bombClone);
+            bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, isKick);
-     
-
+            bombSc.Initialized(id, playerActorId, firePower, bombType, explosionNum);//, isKick);
             return bombClone;
         }
         else if (bombType == 4)
         {
             bombClone = Instantiate(bounceBomb, bombPos, bounceBomb.transform.rotation);
             bombClones.Add(bombClone);
+            bombClone.GetComponent<SphereCollider>().enabled = true;
             bombSc = bombClone.GetComponent<Bomb>();
-            bombSc.Initialized(id, playerActorId, firePower, isKick);
-     
-
+            bombSc.Initialized(id, playerActorId, firePower, bombType, explosionNum);//, isKick);
             return bombClone;
         }
         else
@@ -95,5 +95,27 @@ public class BombManager : SingletonMonoBehaviour<BombManager>
         return null;
     }
 
-
+    public GameObject InstantiateExplosionEffect(Vector3 pos,int playerNum)
+    {
+        if(playerNum == 1)
+        {
+            return Instantiate(obj_player1ExplosionEffect, pos, obj_player1ExplosionEffect.transform.rotation);
+        }
+        else if (playerNum == 2)
+        {
+            return Instantiate(obj_player2ExplosionEffect, pos, obj_player2ExplosionEffect.transform.rotation);
+        }
+        else if (playerNum == 3)
+        {
+            return Instantiate(obj_player3ExplosionEffect, pos, obj_player3ExplosionEffect.transform.rotation);
+        }
+        else if (playerNum == 4)
+        {
+            return Instantiate(obj_player4ExplosionEffect, pos, obj_player4ExplosionEffect.transform.rotation);
+        }
+        else
+        {
+            return null;
+        }
+    }
 }

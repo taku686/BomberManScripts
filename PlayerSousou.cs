@@ -97,9 +97,51 @@ public class PlayerSousou : PlayerBase
         Destroy(effectClone_Two);
     }
 
-     public override IEnumerator Die()
+    public override IEnumerator Die(int playerNum)
     {
         boxCollider_Collision.isTrigger = false;
+        if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode)
+        {
+            if (playerNum == 1)
+            {
+                sc_battleManager.UpdateScore(10, 1);
+            }
+            else if (playerNum == 2)
+            {
+                sc_battleManager.UpdateScore(10, 2);
+            }
+            else if (playerNum == 3)
+            {
+                sc_battleManager.UpdateScore(10, 3);
+            }
+            else if (playerNum == 4)
+            {
+                sc_battleManager.UpdateScore(10, 4);
+            }
+            else
+            {
+                sc_battleManager.UpdateScore(0, 0);
+            }
+        }
+        else if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.SurvivalMode)
+        {
+            if (GManager.Instance.playerNum == 1)
+            {
+                sc_battleManager.UpdateScore(-1, 1);
+            }
+            else if (GManager.Instance.playerNum == 2)
+            {
+                sc_battleManager.UpdateScore(-1, 2);
+            }
+            else if (GManager.Instance.playerNum == 3)
+            {
+                sc_battleManager.UpdateScore(-1, 3);
+            }
+            else if (GManager.Instance.playerNum == 4)
+            {
+                sc_battleManager.UpdateScore(-1, 4);
+            }
+        }
         float time = 0;
         while (time < 2)
         {

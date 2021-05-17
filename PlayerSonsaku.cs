@@ -37,14 +37,14 @@ public class PlayerSonsaku : PlayerBase
         int bombType = BombType();
         int firePower = itemManager.firePower;
         bool isKick = itemManager.isKick;
-        photonView.RPC(nameof(Sonsaku_Skill_Two), RpcTarget.All, playerPos, shotPoint.position, angle, bombType, firePower, isKick);
+        photonView.RPC(nameof(Sonsaku_Skill_Two), RpcTarget.All, playerPos, shotPoint.position, angle, bombType, firePower,GManager.Instance.playerNum);
     }
 
     [PunRPC]
-    private void Sonsaku_Skill_Two(Vector3 playerPos,Vector3 shotPos,float angle,int bombType,int firePower,bool isKick)
+    private void Sonsaku_Skill_Two(Vector3 playerPos,Vector3 shotPos,float angle,int bombType,int firePower,int explosionNum)
     {
         base.Skill_Two();
-        StartCoroutine(Bombardment(playerPos, shotPos, angle, bombType, firePower, isKick));
+        StartCoroutine(Bombardment(playerPos, shotPos, angle, bombType, firePower,explosionNum));
     }
 
     IEnumerator TrigerSwitch()
@@ -55,16 +55,16 @@ public class PlayerSonsaku : PlayerBase
        
     }
 
-    IEnumerator Bombardment(Vector3 playerPos,Vector3 shotPos, float angle, int bombType, int firePower, bool isKick)
+    IEnumerator Bombardment(Vector3 playerPos,Vector3 shotPos, float angle, int bombType, int firePower, int explosionNum)
     {
         yield return new WaitForSeconds(2f);
         exitCollision.SetActive(false);
         for (int i = -1; i < 2; i++)
         {
-           
+
             if (angle == 0 || angle == 180)
             {
-                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower, isKick);
+                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower, explosionNum);//, isKick);
                 Bomb bombCloneSc = bombClone.GetComponent<Bomb>();
                 if (angle == 0)
                 {
@@ -81,7 +81,7 @@ public class PlayerSonsaku : PlayerBase
             }
             else if (angle == 90 || angle == 270)
             {
-                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower, isKick);
+                GameObject bombClone = BombManager.Instance.BombInstantiate(shotPos, bombId++, actorNum, bombType, firePower, explosionNum);//, isKick);
                 Bomb bombCloneSc = bombClone.GetComponent<Bomb>();
                 if (angle == 90)
                 {

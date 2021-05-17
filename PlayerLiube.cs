@@ -145,15 +145,13 @@ public class PlayerLiube : PlayerBase
             StartCoroutine(DropBomb_DownTime());
             int bombType = BombType();
             int firePower = itemManager.firePower;
-            bool isKick = itemManager.isKick;
             var pos = new Vector3
 (
     Mathf.RoundToInt(myTransform.position.x),
    0.4f,
     Mathf.RoundToInt(myTransform.position.z)
 );
-
-            photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower, isKick);
+            photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower, GManager.Instance.playerNum);
         }
     }
 }

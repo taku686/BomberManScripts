@@ -19,7 +19,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [SerializeField] Button leftButton;
     public List<GameObject> playerObj;
   //  public static byte playerNumber=2;
-    public static int stageNumber=1;
+  //  public static int stageNumber=1;
     public  int itemNumber;
     public  bool isCreateRoom;
     public  bool isEnterRoom;
@@ -127,6 +127,9 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.CurrentRoom.SetStageNum(GManager.Instance.stageNum);
+            PhotonNetwork.CurrentRoom.SetTimeUpdate(GManager.Instance.time * 60);
+            PhotonNetwork.CurrentRoom.SetHeartNum(GManager.Instance.heart);
+            PhotonNetwork.CurrentRoom.SetBatttleMode(GManager.Instance.battleMode);
         }
  //       Debug.Log("部屋の人数" + PhotonNetwork.CurrentRoom.Players.Count);
     }

@@ -10,7 +10,7 @@ public class Bomb : MonoBehaviour
 {
     [SerializeField] protected int id;
     [SerializeField] protected int ownerId;
-    public GameObject explosionPrefab;
+ //   public GameObject explosionPrefab;
     public GameObject explosionPrefab_sub;
     public LayerMask levelMask;
     protected bool exploded;
@@ -30,10 +30,15 @@ public class Bomb : MonoBehaviour
     public bool isBack;
     public bool isRight;
     public bool isLeft;
-  [SerializeField]  protected int m_firePower;
-    protected bool m_isKick;
+    public int m_firePower;
+    public bool m_isKick;
+    private int bombType;
+    public int m_explosionNum;
+    //   public bool isHold;
     public int Id { get { return id; } private set { id = value; } }
     public int OwnerId { get { return ownerId; } private set { ownerId = value; } }
+
+    public int BombType { get { return bombType; } private set { bombType = value; } }
 
     public bool Equals(int id, int ownerId) => id == Id && ownerId == OwnerId;
 
@@ -45,12 +50,14 @@ public class Bomb : MonoBehaviour
     }
 
 
-    public virtual void Initialized(int id, int ownerId,int firePower,bool isKick)
+    public virtual void Initialized(int id, int ownerId,int firePower,int bombType,int explosionNum)//,bool isKick)
     {
         Id = id;
         OwnerId = ownerId;
         m_firePower = firePower;
-        m_isKick = isKick;
+  //      m_isKick = isKick;
+        BombType = bombType;
+        m_explosionNum = explosionNum;
     }
 
     public void ThrowingBall(float angle,Vector3 playerPos)
@@ -60,22 +67,22 @@ public class Bomb : MonoBehaviour
         if (angle == 0)
         {
             targetPosition = new Vector3(Mathf.RoundToInt(playerPos.x), 0.5f, Mathf.RoundToInt(playerPos.z + 3));
-            transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+            transform.DOJump(targetPosition, 2, 1, throwingSpeed);
         }
         else if (angle == 90)
         {
             targetPosition = new Vector3(Mathf.RoundToInt(playerPos.x + 3), 0.5f, Mathf.RoundToInt(playerPos.z));
-            transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+            transform.DOJump(targetPosition, 2, 1, throwingSpeed);
         }
         else if (angle == 180)
         {
             targetPosition = new Vector3(Mathf.RoundToInt(playerPos.x), 0.5f, Mathf.RoundToInt(playerPos.z - 3));
-            transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+            transform.DOJump(targetPosition, 2, 1, throwingSpeed);
         }
         else if (angle == 270)
         {
             targetPosition = new Vector3(Mathf.RoundToInt(playerPos.x - 3), 0.5f, Mathf.RoundToInt(playerPos.z));
-            transform.DOJump(targetPosition, 1, 1, throwingSpeed);
+            transform.DOJump(targetPosition, 2, 1, throwingSpeed);
         }
     }
  
@@ -95,8 +102,8 @@ public class Bomb : MonoBehaviour
         }
 
         // 爆弾の位置に爆発エフェクトを作成
-       Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
+        //   Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        BombManager.Instance.InstantiateExplosionEffect(transform.position, m_explosionNum);
         // 爆弾を非表示にする
         GetComponent<MeshRenderer>().enabled = false;
         exploded = true;
@@ -141,22 +148,28 @@ public class Bomb : MonoBehaviour
             {
                 // 爆風を広げるために、
                 // 爆発エフェクトのオブジェクトを作成
+                /*
                 Instantiate
                    (
                        explosionPrefab,
                        transform.position + (i * direction),
                        explosionPrefab.transform.rotation
                    );
+                */
+                BombManager.Instance.InstantiateExplosionEffect(transform.position + (i * direction), m_explosionNum);
             }
             // 爆風を広げた先に壊れる壁が存在する場合
             else if (hit.collider.CompareTag("BreakingWall"))
             {
+                /*
                 Instantiate
                  (
                      explosionPrefab,
                      transform.position + (i * direction),
                      explosionPrefab.transform.rotation
                  );
+                */
+                BombManager.Instance.InstantiateExplosionEffect(transform.position + (i * direction), m_explosionNum);
                 break;
             }
             // 爆風を広げた先に壁が存在する場合
@@ -175,12 +188,15 @@ public class Bomb : MonoBehaviour
             }
             else
             {
+                /*
                 Instantiate
                  (
                      explosionPrefab,
                      transform.position + (i * direction),
                      explosionPrefab.transform.rotation
                  );
+                */
+                BombManager.Instance.InstantiateExplosionEffect(transform.position + (i * direction), m_explosionNum);
             }
             // 0.05 秒待ってから、次のマスに爆風を広げる
             yield return new WaitForSeconds(0.05f);
@@ -190,7 +206,7 @@ public class Bomb : MonoBehaviour
     // 他のオブジェクトがこの爆弾に当たったら呼び出される
     public void OnTriggerEnter(Collider other)
     {
-        if (!exploded && other.CompareTag("Explosion"))
+        if (!exploded && other.CompareTag("Explosion"))//&&!isHold)
         {
             StopCoroutine(Explode());
             isChain = true;
@@ -200,7 +216,7 @@ public class Bomb : MonoBehaviour
         {
             player = other.gameObject;
         }
-        if ((other.CompareTag("BreakingWall") || other.CompareTag("Wall")) && (PlayerBase.isThrowing || isSkipOver))
+        if ((other.CompareTag("BreakingWall") || other.CompareTag("Wall")) && (PlayerBase.isThrowing || PlayerBase_OffLine.isThrowing || isSkipOver))
         {
             //    Debug.Log("壁接触");
             if (angle == 0 || isForward)
@@ -224,13 +240,14 @@ public class Bomb : MonoBehaviour
                 transform.DOJump(targetPosition, 2, 1, throwingSpeed);
             }
         }
-        else if (other.CompareTag("OutWall") && (PlayerBase.isThrowing || isSkipOver))
+        else if (other.CompareTag("OutWall") && (PlayerBase.isThrowing || PlayerBase_OffLine.isThrowing || isSkipOver))
         {
             StartCoroutine(BombTeleportaion());
         }
-        if (other.CompareTag("Ground") && (PlayerBase.isThrowing || isSkipOver))
+        if (other.CompareTag("Ground") && (PlayerBase.isThrowing || PlayerBase_OffLine.isThrowing || isSkipOver))
         {
             PlayerBase.isThrowing = false;
+            PlayerBase_OffLine.isThrowing = false;
             isBombWait = false;
             sphereCollider.isTrigger = false;
             isSkipOver = false;

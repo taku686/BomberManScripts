@@ -68,7 +68,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     public static bool isThrowing;
     private GameObject m_bomb;
     private Bomb m_bombSc;
-    private bool isTouchBomb;
+//    private bool isTouchBomb;
     [SerializeField] Transform bombPos;
     protected GlobalClock[] globalClock;
     [SerializeField] protected bool isSkill_One_Rpc;
@@ -78,12 +78,15 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     [SerializeField]protected BoxCollider boxCollider_Collision;
     public bool isDead;
     protected int downTime = 0;
-    public int PlayerOwnerId { get; private set; }
+    private bool isThrowWait = true;
+    private bool isHoldWait = true;
+    protected BattleManager sc_battleManager;
+    public int int_playerNum;
 
     // Use this for initialization
     protected virtual void Start()
     {
-             Debug.Log("LocalPlayer" + PhotonNetwork.LocalPlayer.ActorNumber);
+   //          Debug.Log("LocalPlayer" + PhotonNetwork.LocalPlayer.ActorNumber);
         rigidBody = GetComponent<Rigidbody>();
         myTransform = transform;
         photonView.RPC(nameof(Initialized), RpcTarget.All);
@@ -95,6 +98,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         Debug.Log("初期動作");
         itemManager = GameObject.Find("ItemManager").GetComponent<ItemManager>();
         stageUIManager = GameObject.Find("UIManager").GetComponent<StageUIManager>();
+        sc_battleManager = GameObject.Find("GameManager").GetComponent<BattleManager>();
     }
 
     // Update is called once per frame
@@ -111,7 +115,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             else if (Input.GetKeyDown(KeyCode.J) && !isSkill_One && !isSkill_One_Rpc)
             {
                 Skill_One();
-            }
+            }          
             if (Input.GetKeyDown(KeyCode.L) && !isSkill_Two && !isActive_Skill_Two && isSkill_Two_Rpc)
             {
                 photonView.RPC(nameof(Skill_Two), RpcTarget.All);
@@ -120,22 +124,45 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             {
                 Skill_Two();
             }
-            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow && isTouchBomb && isTouchBomb )
+            if (Input.GetKeyDown(KeyCode.H) && !isHold && itemManager.isThrow&&isHoldWait )
             {
-                Bomb bombSc = m_bomb.GetComponent<Bomb>();
-                photonView.RPC(nameof(Lift), RpcTarget.All,bombSc.Id,bombSc.OwnerId);
+                isHoldWait = false;
+                StartCoroutine(HoldWait_Corutine());
+                if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, .7f, layerMask))
+                {
+                    if (hit.collider.CompareTag("Bomb"))
+                    {
+                        hit.collider.GetComponent<SphereCollider>().enabled = false;                  
+                        Bomb bombSc = hit.transform.GetComponent<Bomb>();
+                        photonView.RPC(nameof(Lift), RpcTarget.All,hit.transform.position ,bombSc.Id, bombSc.OwnerId,bombSc.BombType,bombSc.m_firePower,GManager.Instance.playerNum);
+                    }
+                }
             }
-            else if (Input.GetKeyDown(KeyCode.H) && isHold )
+            else if (Input.GetKeyDown(KeyCode.H) && isHold&&!isThrowWait )
             {
+                isThrowWait = true;
                 float angle = (transform.rotation.eulerAngles.y) % 360;
                 Vector3 playerPos = transform.position;
                 photonView.RPC(nameof(Throw), RpcTarget.All, angle, playerPos);
             }
+            if(Input.GetKeyDown(KeyCode.K) && itemManager.isKick)
+            {
+                if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, .7f, layerMask))
+                {
+                    if (hit.collider.CompareTag("Bomb"))
+                    {
+                        Bomb bombSc = hit.transform.GetComponent<Bomb>();
+                        photonView.RPC(nameof(Kick), RpcTarget.All, bombSc.Id, bombSc.OwnerId);
+                    }
+                }
+            }
+
             if (isDead)
             {
                 isDead = false;
-                photonView.RPC(nameof(Die_Player), RpcTarget.All);
+                photonView.RPC(nameof(Die_Player), RpcTarget.All,GManager.Instance.playerNum);
             }
+            
                    
             float h = Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
@@ -148,6 +175,18 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         }
     }
 
+    [PunRPC]
+    protected void Kick(int id ,int ownerId)
+    {
+        if(BombManager.Instance.BombSearch(id,ownerId)!= null)
+        {
+            BombManager.Instance.BombSearch(id, ownerId).GetComponent<Bomb>().m_isKick = true;
+        }
+        else
+        {
+            return;
+        }
+    }
    
     protected virtual void Skill_One()
     {
@@ -176,15 +215,20 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    protected virtual void Lift(int id, int ownerId)
+    protected virtual void Lift(Vector3 pos,int id, int ownerId,int bombType,int fireType,int explosionNum)
     {
         animator.SetTrigger("Throw");
-        Debug.Log("BombID" + id);
-        Debug.Log("BombOwnerId" + ownerId);
-        //   Debug.Log("Sender" + info.Sender.NickName);
-        //        Debug.Log("Sender" + info.Sender.UserId);
-        //      Debug.Log("LocalPlayer" + PhotonNetwork.LocalPlayer.UserId);
-        GameObject bomb = BombManager.Instance.BombSearch(id, ownerId);
+        GameObject bomb;
+        if (BombManager.Instance.BombSearch(id, ownerId) != null)
+        {
+             bomb = BombManager.Instance.BombSearch(id, ownerId);
+        }
+        else
+        {
+            bomb = BombManager.Instance.BombInstantiate(pos, id, ownerId, bombType, fireType,explosionNum);
+        }
+        
+        m_bomb = bomb;
         m_bombSc = bomb.GetComponent<Bomb>();
         m_bombSc.isBombWait = true;
         bomb.transform.SetParent(bombPos);
@@ -197,6 +241,8 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(.5f);
         animator.SetBool("Hold", true);
+        yield return new WaitForSeconds(.5f);
+        isThrowWait = false;
     }
 
     [PunRPC]
@@ -205,6 +251,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         animator.SetTrigger("Throwing");
         animator.SetBool("Hold", false);
         m_bomb.transform.parent = null;
+        m_bomb.GetComponent<SphereCollider>().enabled = true;
         if (photonView.IsMine)
         {
             StartCoroutine(ExitCollisionSwitch_Corutine());
@@ -213,7 +260,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         m_bombSc.ThrowingBall(angle, playerPos);
         isThrowing = true;
         isHold = false;
-        isTouchBomb = false;
         m_bombSc = null;
         m_bomb = null;
     }
@@ -235,9 +281,6 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         UpdatePlayerMovement();        
     }
 
-    /// <summary>
-    /// Updates Player 2's movement and facing rotation using the arrow keys and drops bombs using Enter or Return
-    /// </summary>
     protected virtual void UpdatePlayerMovement()
     {
         if (Input.GetKey(KeyCode.UpArrow) && !isSkill_One && !isSkill_Two)
@@ -281,7 +324,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
    0.4f,
     Mathf.RoundToInt(myTransform.position.z)
 );
-            photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower, isKick);
+            photonView.RPC(nameof(DropBomb), RpcTarget.All, pos, bombId++, bombType, firePower, GManager.Instance.playerNum);
         }
     }
 
@@ -292,13 +335,19 @@ public class PlayerBase : MonoBehaviourPunCallbacks
         downTime = 0;
     }
 
+    IEnumerator HoldWait_Corutine()
+    {
+        yield return new WaitForSeconds(1);
+        isHoldWait = true;
+    }
+
     [PunRPC]
     /// <summary>
     /// Drops a bomb beneath the player
     /// </summary>
-    protected void DropBomb(Vector3 bombPos,int bombId,int bombType,int firePower,bool isKick,PhotonMessageInfo info)
+    protected void DropBomb(Vector3 bombPos,int bombId,int bombType,int firePower,int explosionNum,PhotonMessageInfo info)
     {
-        BombManager.Instance.BombInstantiate(bombPos, bombId, info.Sender.ActorNumber, bombType, firePower, isKick);
+        BombManager.Instance.BombInstantiate(bombPos, bombId, info.Sender.ActorNumber, bombType, firePower,explosionNum);
     }
 
     protected int BombType()
@@ -353,26 +402,11 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             itemManager.isDiffuse = false;
             itemManager.isBounce = true;
         }
-        else if (other.CompareTag("Bomb"))
-        {
-            //    Debug.Log("ボム接触" + isTouchBomb);
-            isTouchBomb = true;
-            m_bomb = other.gameObject;
-        }
         else if (other.CompareTag("FreezeEffect"))
         {
             StartCoroutine(FreezeMove());
         }
     }
-    protected virtual void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Bomb") && !isHold)
-        {
-            //    Debug.Log("ボム接触");
-            isTouchBomb = false;
-        }
-    }
-    
     private void OnCollisionStay(Collision collision)
     {
         Vector3 dir = collision.transform.localPosition - transform.position;
@@ -397,7 +431,7 @@ public class PlayerBase : MonoBehaviourPunCallbacks
             {
                 transform.position = new Vector3(10, 0, 0);
             }
-            photonView.RPC(nameof(Die_Player), RpcTarget.All);
+            photonView.RPC(nameof(Die_Player), RpcTarget.All,0);
         }
     }
 
@@ -409,14 +443,57 @@ public class PlayerBase : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    protected  void Die_Player()
+    protected  void Die_Player(int playerNum)
     {
-        StartCoroutine(Die());
+        StartCoroutine(Die(playerNum));
     }
 
-    public virtual IEnumerator Die()
+    public virtual IEnumerator Die(int playerNum)
     {
         boxCollider_Collision.isTrigger = false;
+        if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode)
+        {
+            if (playerNum == 1)
+            {
+                sc_battleManager.UpdateScore(10, 1);
+            }
+            else if (playerNum == 2)
+            {
+                sc_battleManager.UpdateScore(10, 2);
+            }
+            else if (playerNum == 3)
+            {
+                sc_battleManager.UpdateScore(10, 3);
+            }
+            else if (playerNum == 4)
+            {
+                sc_battleManager.UpdateScore(10, 4);
+            }
+            else
+            {
+                sc_battleManager.UpdateScore(0, 0);
+            }
+        }
+        else if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.SurvivalMode)
+        {
+            if (playerNum == 1)
+            {
+                sc_battleManager.UpdateScore(-1, 1);
+            }
+            else if (playerNum == 2)
+            {
+                sc_battleManager.UpdateScore(-1, 2);
+            }
+            else if (playerNum == 3)
+            {
+                sc_battleManager.UpdateScore(-1, 3);
+            }
+            else if (playerNum == 4)
+            {
+                sc_battleManager.UpdateScore(-1, 4);
+            }
+        }
+        
         float time = 0;
         while (time < 2)
         {
