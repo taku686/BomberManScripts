@@ -19,13 +19,12 @@ public class BattleManager : MonoBehaviourPunCallbacks
     void Start()
     {
         GManager.Instance.PlayerInstantiate();
-  //      Debug.Log("バトルモード" + PhotonNetwork.CurrentRoom.GetBattleMode());
+        //      Debug.Log("バトルモード" + PhotonNetwork.CurrentRoom.GetBattleMode());
         if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode && !GManager.Instance.isOffLine)
         {
-            m_double_time = PhotonNetwork.Time;
             m_float_time = PhotonNetwork.CurrentRoom.GetTimeUpdate();
             m_txt_timeText.text = PhotonNetwork.CurrentRoom.GetTimeUpdate().ToString();
-            for(int i = 0; i < PhotonNetwork.CurrentRoom.MaxPlayers; i++)
+            for (int i = 0; i < PhotonNetwork.CurrentRoom.MaxPlayers; i++)
             {
                 m_obj_PlayerScore[i].SetActive(true);
                 m_txt_playerScore[i].text = 0.ToString();
@@ -34,7 +33,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
         else if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.SurvivalMode && !GManager.Instance.isOffLine)
         {
             m_txt_timeText.text = "∞";
-            for(int i = 0; i < PhotonNetwork.CurrentRoom.MaxPlayers; i++)
+            for (int i = 0; i < PhotonNetwork.CurrentRoom.MaxPlayers; i++)
             {
                 m_obj_PlayerScore[i].SetActive(true);
                 m_txt_playerScore[i].text = PhotonNetwork.CurrentRoom.GetHeartNum().ToString();
@@ -46,21 +45,17 @@ public class BattleManager : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        if (PhotonNetwork.IsMasterClient && m_double_time + 5 < PhotonNetwork.Time&&PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode && !GManager.Instance.isOffLine)
-        {
-            m_double_time = PhotonNetwork.Time;
-            m_float_time -= 5;
-            PhotonNetwork.CurrentRoom.SetTimeUpdate(m_float_time);
-        }
+        if (!PhotonNetwork.InRoom) { return; }
+        // まだゲームの開始時刻が設定されていない場合は更新しない
+        if (!PhotonNetwork.CurrentRoom.TryGetStartTime(out int timestamp)) { return; }
+
+        float elapsedTime = Mathf.Max(0f, unchecked(PhotonNetwork.ServerTimestamp - timestamp) / 1000f);
+        m_txt_timeText.text = (m_float_time - elapsedTime).ToString("f0");
     }
 
     public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
     {
-        if (PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode && !GManager.Instance.isOffLine)
-        {
-            m_txt_timeText.text = PhotonNetwork.CurrentRoom.GetTimeUpdate().ToString();
-        }
-        if (PhotonNetwork.CurrentRoom.GetTimeUpdate() <= 0&&PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode)
+        if (PhotonNetwork.CurrentRoom.GetTimeUpdate() <= 0 && PhotonNetwork.CurrentRoom.GetBattleMode() == (int)GManager.BattleMode.TimeMode)
         {
             int highScore = 0;
             for (int i = 0; i < 4; i++)
@@ -72,9 +67,7 @@ public class BattleManager : MonoBehaviourPunCallbacks
                     m_txt_resultText.text = $"Player{i + 1}勝利";
                 }
             }
-
         }
-       
     }
 
     public void UpdateScore(int score, int Player)
@@ -123,5 +116,4 @@ public class BattleManager : MonoBehaviourPunCallbacks
             }
         }
     }
-
 }

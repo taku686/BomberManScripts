@@ -50,12 +50,11 @@ public class Bomb : MonoBehaviour
     }
 
 
-    public virtual void Initialized(int id, int ownerId,int firePower,int bombType,int explosionNum)//,bool isKick)
+    public virtual void Initialized(int id, int ownerId,int firePower,int bombType,int explosionNum)
     {
         Id = id;
         OwnerId = ownerId;
         m_firePower = firePower;
-  //      m_isKick = isKick;
         BombType = bombType;
         m_explosionNum = explosionNum;
     }
@@ -206,7 +205,7 @@ public class Bomb : MonoBehaviour
     // 他のオブジェクトがこの爆弾に当たったら呼び出される
     public void OnTriggerEnter(Collider other)
     {
-        if (!exploded && other.CompareTag("Explosion"))//&&!isHold)
+        if (!exploded && (other.CompareTag("Explosion1")|| other.CompareTag("Explosion2") || other.CompareTag("Explosion3") || other.CompareTag("Explosion4")))
         {
             StopCoroutine(Explode());
             isChain = true;
