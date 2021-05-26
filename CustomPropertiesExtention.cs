@@ -7,7 +7,7 @@ using Photon.Pun;
 using System;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
-public static class CustomPropertiesExtention 
+public static class CustomPropertiesExtention
 {
     private const string playerNumKey = "pNum";
     private const string characterNumKey = "cNum";
@@ -16,6 +16,7 @@ public static class CustomPropertiesExtention
     private const string timeNumKey = "tNum";
     private const string heartNumKey = "hNum";
     private const string battleModeKey = "bMode";
+    private const string startTimeKey = "sTime";
     private static readonly Hashtable hashtable = new Hashtable();
 
     public static void SetPlayerNum(this Player player, int actorNum)
@@ -27,7 +28,7 @@ public static class CustomPropertiesExtention
 
     public static void SetCharacterNum(this Player player, int characterNum)
     {
-   //     Debug.Log("キャラクター設定");
+        //     Debug.Log("キャラクター設定");
         hashtable[characterNumKey] = characterNum;
         player.SetCustomProperties(hashtable);
         hashtable.Clear();
@@ -48,7 +49,7 @@ public static class CustomPropertiesExtention
         hashtable.Clear();
     }
 
-    public static void SetTimeUpdate(this Room room,float time)
+    public static void SetTimeUpdate(this Room room, float time)
     {
         hashtable[timeNumKey] = time;
         room.SetCustomProperties(hashtable);
@@ -62,9 +63,16 @@ public static class CustomPropertiesExtention
         hashtable.Clear();
     }
 
-    public static void SetBatttleMode(this Room room,GManager.BattleMode battleMode)
+    public static void SetBatttleMode(this Room room, GManager.BattleMode battleMode)
     {
         hashtable[battleModeKey] = battleMode;
+        room.SetCustomProperties(hashtable);
+        hashtable.Clear();
+    }
+
+    public static void SetStartTime(this Room room, int timestamp)
+    {
+        hashtable[startTimeKey] = timestamp;
         room.SetCustomProperties(hashtable);
         hashtable.Clear();
     }
@@ -102,6 +110,20 @@ public static class CustomPropertiesExtention
 
     public static int GetBattleMode(this Room room)
     {
-          return ((int)room.CustomProperties[battleModeKey] is int battleMode) ? battleMode : -1;
+        return ((int)room.CustomProperties[battleModeKey] is int battleMode) ? battleMode : -1;
+    }
+
+    public static bool TryGetStartTime(this Room room, out int timestamp)
+    {
+        if (room.CustomProperties[startTimeKey] is int value)
+        {
+            timestamp = value;
+            return true;
+        }
+        else
+        {
+            timestamp = 0;
+            return false;
+        }
     }
 }

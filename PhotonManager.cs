@@ -130,6 +130,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             PhotonNetwork.CurrentRoom.SetTimeUpdate(GManager.Instance.time * 60);
             PhotonNetwork.CurrentRoom.SetHeartNum(GManager.Instance.heart);
             PhotonNetwork.CurrentRoom.SetBatttleMode(GManager.Instance.battleMode);
+            PhotonNetwork.CurrentRoom.SetStartTime(PhotonNetwork.ServerTimestamp);
         }
  //       Debug.Log("部屋の人数" + PhotonNetwork.CurrentRoom.Players.Count);
     }
