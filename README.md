@@ -1,15 +1,27 @@
 # BomberManScripts
 **Bachoのスキル１**
 ![Bachoスキル1](https://user-images.githubusercontent.com/74074598/133746138-7c6a1a44-29fc-405f-83cd-56d475790b27.gif)
+**Bachoのスキル２**
 ![Bachoスキル2](https://user-images.githubusercontent.com/74074598/133746160-60e257ef-fb37-4a5a-a8bc-d808f410936e.gif)
+**Ryofuのスキル１**
 ![Ryofuスキル1](https://user-images.githubusercontent.com/74074598/133873629-adcbf0f1-4a2c-46c7-bef2-8b599224a777.gif)
+**Ryofuのスキル２**
 ![Ryofuスキル2](https://user-images.githubusercontent.com/74074598/133873631-49918970-e956-4688-9d4a-07863a3e2fc2.gif)
+**Ryuubiのスキル1**
 ![Ryuubiスキル1](https://user-images.githubusercontent.com/74074598/133873632-70842a3e-48c5-4fb6-a6e4-4a9aad2d2d78.gif)
+**Ryuubiのスキル２**
 ![Ryuubiスキル2](https://user-images.githubusercontent.com/74074598/133873634-d5dcdd6f-8704-42a9-be53-8196888d3586.gif)
+**Shibasyouのスキル1**
 ![Shibasyouスキル1](https://user-images.githubusercontent.com/74074598/133873635-3fa63cfe-72d6-46c6-8dcc-75873932332a.gif)
+**Shibasyouのスキル２**
 ![Shibasyouスキル2](https://user-images.githubusercontent.com/74074598/133873636-1dcc0293-55ac-477e-a7f0-662839d0cb76.gif)
+**Syuuyuのスキル1**
 ![Syuuyuスキル1](https://user-images.githubusercontent.com/74074598/133873637-f5252395-7d28-44fa-9328-ee18637444e2.gif)
+**Syuuyuのスキル２**
 ![Syuuyuスキル２](https://user-images.githubusercontent.com/74074598/133873638-ff3d41ca-2718-4dd3-9ec4-2776bccf9ddc.gif)
+**Tyouunのスキル1**
 ![Tyouunスキル1](https://user-images.githubusercontent.com/74074598/133873640-45cd6384-46cb-4bf8-a8d6-ecbd3e2c3ca6.gif)
+**Tyouunのスキル２**
 ![Tyouunスキル2](https://user-images.githubusercontent.com/74074598/133873702-4c0a8faf-88a5-4db1-94a2-ade47bbc1883.gif)
+**Title画面**
 ![Title](https://user-images.githubusercontent.com/74074598/133873710-70e82cad-f073-47ba-afad-e9ace8614fa4.gif)
