@@ -9,7 +9,7 @@
 ![Ryofuスキル2](https://user-images.githubusercontent.com/74074598/133873631-49918970-e956-4688-9d4a-07863a3e2fc2.gif)
 **Ryuubiのスキル1（ジャンプする）**
 ![Ryuubiスキル1](https://user-images.githubusercontent.com/74074598/133873632-70842a3e-48c5-4fb6-a6e4-4a9aad2d2d78.gif)
-**Ryuubiのスキル２（ステータスが上昇し、スピードアップと壁する抜けができる）**
+**Ryuubiのスキル２（ステータスが上昇し、スピードアップと壁をすり抜けることができる）**
 ![Ryuubiスキル2](https://user-images.githubusercontent.com/74074598/133873634-d5dcdd6f-8704-42a9-be53-8196888d3586.gif)
 **Shibasyouのスキル1（周囲のボムをエフェクトが当たれば消す）**
 ![Shibasyouスキル1](https://user-images.githubusercontent.com/74074598/133873635-3fa63cfe-72d6-46c6-8dcc-75873932332a.gif)
