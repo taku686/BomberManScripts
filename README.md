@@ -1,3 +1,15 @@
 # BomberManScripts
 ![Bachoスキル1](https://user-images.githubusercontent.com/74074598/133746138-7c6a1a44-29fc-405f-83cd-56d475790b27.gif)
 ![Bachoスキル2](https://user-images.githubusercontent.com/74074598/133746160-60e257ef-fb37-4a5a-a8bc-d808f410936e.gif)
+![Ryofuスキル1](https://user-images.githubusercontent.com/74074598/133873629-adcbf0f1-4a2c-46c7-bef2-8b599224a777.gif)
+![Ryofuスキル2](https://user-images.githubusercontent.com/74074598/133873631-49918970-e956-4688-9d4a-07863a3e2fc2.gif)
+![Ryuubiスキル1](https://user-images.githubusercontent.com/74074598/133873632-70842a3e-48c5-4fb6-a6e4-4a9aad2d2d78.gif)
+![Ryuubiスキル2](https://user-images.githubusercontent.com/74074598/133873634-d5dcdd6f-8704-42a9-be53-8196888d3586.gif)
+![Shibasyouスキル1](https://user-images.githubusercontent.com/74074598/133873635-3fa63cfe-72d6-46c6-8dcc-75873932332a.gif)
+![Shibasyouスキル2](https://user-images.githubusercontent.com/74074598/133873636-1dcc0293-55ac-477e-a7f0-662839d0cb76.gif)
+![Syuuyuスキル1](https://user-images.githubusercontent.com/74074598/133873637-f5252395-7d28-44fa-9328-ee18637444e2.gif)
+![Syuuyuスキル２](https://user-images.githubusercontent.com/74074598/133873638-ff3d41ca-2718-4dd3-9ec4-2776bccf9ddc.gif)
+![Tyouunスキル1](https://user-images.githubusercontent.com/74074598/133873640-45cd6384-46cb-4bf8-a8d6-ecbd3e2c3ca6.gif)
+![Tyouunスキル2](https://user-images.githubusercontent.com/74074598/133873641-1ec3225a-6cf5-4f8b-a358-fdee07231915.gif
+![Title](https://user-images.githubusercontent.com/74074598/133873645-34db63b5-27f0-46f0-b61d-6f8b432c33b6.gif)
+)
