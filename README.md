@@ -10,6 +10,5 @@
 ![Syuuyuスキル1](https://user-images.githubusercontent.com/74074598/133873637-f5252395-7d28-44fa-9328-ee18637444e2.gif)
 ![Syuuyuスキル２](https://user-images.githubusercontent.com/74074598/133873638-ff3d41ca-2718-4dd3-9ec4-2776bccf9ddc.gif)
 ![Tyouunスキル1](https://user-images.githubusercontent.com/74074598/133873640-45cd6384-46cb-4bf8-a8d6-ecbd3e2c3ca6.gif)
-![Tyouunスキル2](https://user-images.githubusercontent.com/74074598/133873641-1ec3225a-6cf5-4f8b-a358-fdee07231915.gif
-![Title](https://user-images.githubusercontent.com/74074598/133873645-34db63b5-27f0-46f0-b61d-6f8b432c33b6.gif)
-)
+![Tyouunスキル2](https://user-images.githubusercontent.com/74074598/133873702-4c0a8faf-88a5-4db1-94a2-ade47bbc1883.gif)
+![Title](https://user-images.githubusercontent.com/74074598/133873710-70e82cad-f073-47ba-afad-e9ace8614fa4.gif)
